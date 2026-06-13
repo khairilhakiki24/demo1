@@ -2,7 +2,7 @@
   "name": "SI ONTEL - Kalkulator Dosis Medis",
   "short_name": "SI ONTEL",
   "description": "Aplikasi PWA Offline untuk Kalkulator Dosis Medis & Pengenceran Obat kelas profesional.",
-  "start_url": "index.html",
+  "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#f8fafc",
   "theme_color": "#0ea5e9",

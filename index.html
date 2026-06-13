@@ -4,6 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#0ea5e9" id="meta-theme-color">
+    
+    <!-- PERBAIKAN: Pemanggilan Manifest & Ikon Apple -->
+    <link rel="manifest" href="./manifest.json">
+    <link rel="apple-touch-icon" href="assets/icon-192x192.png">
+    
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title id="app-title">SI ONTEL</title>
@@ -126,6 +131,8 @@
 </head>
 <body class="bg-slate-50 text-slate-800 dark:bg-darkBg dark:text-slate-200 font-sans h-[100dvh] flex overflow-hidden selection:bg-primary selection:text-white transition-colors duration-300">
 
+    <!-- UI App HTML tetap persis seperti yang Anda buat sebelumnya -->
+    
     <!-- NOTIFIKASI TOAST -->
     <div id="toast-container" class="fixed top-4 right-4 z-[100] flex flex-col gap-2 pt-safe pointer-events-none"></div>
 
@@ -263,6 +270,7 @@
 
             <!-- VIEW: KALKULATOR -->
             <section id="view-calculator" class="view-section">
+                <!-- Struktur HTML form kalkulator... -->
                 <div class="mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                     <div>
                         <h2 class="text-2xl font-bold mb-1">Kalkulator Dosis & Pengenceran</h2>
@@ -387,6 +395,7 @@
 
             <!-- VIEW: TABEL TITRASI -->
             <section id="view-titrasi" class="view-section">
+                <!-- Struktur HTML tabel titrasi... -->
                 <div class="mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4 no-print">
                     <div>
                         <h2 class="text-2xl font-bold mb-1">Generator Tabel Titrasi</h2>
@@ -452,7 +461,7 @@
                     </div>
                 </div>
 
-                <!-- Area Hasil Tabel (Bisa Di-Print & Dijadikan Gambar) -->
+                <!-- Area Hasil Tabel -->
                 <div id="print-area" class="bg-white dark:bg-darkSurface rounded-2xl shadow-premium border border-slate-100 dark:border-darkBorder overflow-hidden hidden">
                     <div class="p-6 border-b border-slate-100 dark:border-darkBorder flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                         <div>
@@ -464,7 +473,6 @@
                             </div>
                         </div>
                         
-                        <!-- TOMBOL PRINT & SHARE (NO-PRINT) -->
                         <div class="no-print flex w-full md:w-auto gap-2">
                             <button onclick="captureTableAndShare()" class="flex-1 md:flex-none px-4 py-2.5 bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 rounded-xl font-bold btn-press flex justify-center items-center gap-2 text-sm shadow-sm hover:bg-emerald-200 dark:hover:bg-emerald-800/40 transition-colors">
                                 <i data-lucide="share-2" class="w-4 h-4"></i> Simpan Gambar
@@ -503,6 +511,7 @@
 
             <!-- VIEW: RIWAYAT TERSIMPAN -->
             <section id="view-history" class="view-section">
+                <!-- Sama persis seperti source asli ... -->
                  <div class="flex justify-between items-end mb-6">
                     <div>
                         <h2 class="text-2xl font-bold mb-1">Riwayat Tersimpan</h2>
@@ -517,7 +526,7 @@
                      <div class="p-4 border-b border-slate-100 dark:border-darkBorder flex gap-3">
                         <div class="relative flex-1">
                             <i data-lucide="search" class="absolute left-3 top-2.5 w-5 h-5 text-slate-400"></i>
-                            <input type="text" id="search-history" placeholder="Cari riwayat (akan memuat max 100 data)..." class="w-full pl-10 pr-4 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-darkBorder focus:outline-none focus:border-primary text-sm" oninput="debouncedRenderHistory()">
+                            <input type="text" id="search-history" placeholder="Cari riwayat..." class="w-full pl-10 pr-4 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-darkBorder focus:outline-none focus:border-primary text-sm" oninput="debouncedRenderHistory()">
                         </div>
                     </div>
                     <div class="overflow-x-auto">
@@ -531,9 +540,7 @@
                                     <th class="p-4 font-semibold text-right">Aksi</th>
                                 </tr>
                             </thead>
-                            <tbody id="table-history-body" class="divide-y divide-slate-100 dark:divide-darkBorder">
-                                <!-- Rendered by JS -->
-                            </tbody>
+                            <tbody id="table-history-body" class="divide-y divide-slate-100 dark:divide-darkBorder"></tbody>
                         </table>
                     </div>
                 </div>
@@ -541,6 +548,7 @@
 
             <!-- VIEW: MASTER OBAT -->
             <section id="view-master" class="view-section">
+                <!-- Sama persis ... -->
                 <div class="flex justify-between items-end mb-6">
                     <div>
                         <h2 class="text-2xl font-bold mb-1">Master Obat</h2>
@@ -555,7 +563,7 @@
                     <div class="p-4 border-b border-slate-100 dark:border-darkBorder">
                         <div class="relative">
                             <i data-lucide="search" class="absolute left-3 top-2.5 w-5 h-5 text-slate-400"></i>
-                            <input type="text" id="search-obat" placeholder="Cari obat (akan memuat max 100 data)..." class="w-full md:w-72 pl-10 pr-4 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-darkBorder focus:outline-none focus:border-primary text-sm" oninput="debouncedRenderMasterObat()">
+                            <input type="text" id="search-obat" placeholder="Cari obat..." class="w-full md:w-72 pl-10 pr-4 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-darkBorder focus:outline-none focus:border-primary text-sm" oninput="debouncedRenderMasterObat()">
                         </div>
                     </div>
                     <div class="overflow-x-auto">
@@ -568,9 +576,7 @@
                                     <th class="p-4 font-semibold text-right">Aksi</th>
                                 </tr>
                             </thead>
-                            <tbody id="table-obat-body" class="divide-y divide-slate-100 dark:divide-darkBorder">
-                                <!-- Rendered by JS -->
-                            </tbody>
+                            <tbody id="table-obat-body" class="divide-y divide-slate-100 dark:divide-darkBorder"></tbody>
                         </table>
                     </div>
                 </div>
@@ -578,6 +584,7 @@
 
             <!-- VIEW: PENGATURAN -->
             <section id="view-settings" class="view-section">
+                <!-- Sama persis ... -->
                 <div class="mb-6">
                     <h2 class="text-2xl font-bold mb-1">Pengaturan Sistem</h2>
                     <p class="text-slate-500 dark:text-slate-400 text-sm">Sesuaikan aplikasi dengan kebutuhan Anda.</p>
@@ -720,6 +727,7 @@
 
     <!-- MODAL TAMBAH/EDIT OBAT -->
     <div id="modal-obat" class="fixed inset-0 z-[60] bg-slate-900/50 backdrop-blur-sm hidden flex items-center justify-center p-4 opacity-0 transition-opacity duration-300">
+        <!-- Struktur sama ... -->
         <div class="bg-white dark:bg-darkSurface rounded-2xl w-full max-w-md shadow-2xl transform scale-95 transition-transform duration-300">
             <div class="p-5 border-b border-slate-100 dark:border-darkBorder flex justify-between items-center">
                 <h3 class="font-bold text-lg" id="modal-obat-title">Tambah Master Obat</h3>
@@ -748,8 +756,21 @@
         </div>
     </div>
 
-    <!-- SCRIPTS START -->
+    <!-- SCRIPTS PWA & APP -->
     <script>
+        // --- 0. PWA SERVICE WORKER REGISTRATION (PERBAIKAN UTAMA) ---
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(registration => {
+                        console.log('Service Worker terdaftar di scope:', registration.scope);
+                    })
+                    .catch(error => {
+                        console.error('Pendaftaran Service Worker gagal:', error);
+                    });
+            });
+        }
+
         // --- 1. INITIALIZATION, STATE & PERFORMANCE UTILS ---
         let db;
         let chartInstance = null;
@@ -1279,7 +1300,6 @@
                     canvas.toBlob((pngBlob) => {
                         const file = new File([pngBlob], `Label-${drugName.replace(/\s+/g, '-')}.png`, { type: 'image/png' });
                         
-                        // Cek apakah HP support fitur Share langsung
                         if (navigator.canShare && navigator.canShare({ files: [file] })) {
                             navigator.share({
                                 files: [file],
@@ -1299,7 +1319,6 @@
             img.src = url;
         }
 
-        // Fungsi bantuan untuk download otomatis jika fitur Share tidak jalan
         function fallbackDownload(blob, filename) {
             const link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
@@ -1310,7 +1329,6 @@
         }
 
         // --- 5B. TABEL TITRASI (NEW FEATURE) ---
-
         function loadTabelSelect() {
             return new Promise((resolve) => {
                 const store = txDB('obat', 'readonly');
@@ -1440,10 +1458,9 @@
             const appName = localStorage.getItem('appName') || 'SI ONTEL';
             const primaryColor = getComputedStyle(document.documentElement).getPropertyValue('--color-primary').trim() || '#0ea5e9';
 
-            // Kalkulasi Dimensi Kanvas/SVG Dinamis (Tergantung Jumlah Baris)
             const rowHeight = 40;
-            const startY = 220; // Mulai posisi tabel Y
-            const svgHeight = startY + (rows.length * rowHeight) + 60; // ditambah padding footer
+            const startY = 220; 
+            const svgHeight = startY + (rows.length * rowHeight) + 60; 
             const svgWidth = 800;
 
             let rowsSvg = '';
@@ -1454,7 +1471,7 @@
                 const infus = cells[2].textContent;
                 const y = startY + (index * rowHeight);
 
-                const bgFill = index % 2 === 0 ? '#ffffff' : '#f8fafc'; // Selang-seling warna
+                const bgFill = index % 2 === 0 ? '#ffffff' : '#f8fafc'; 
 
                 rowsSvg += `
                     <rect x="40" y="${y}" width="720" height="${rowHeight}" fill="${bgFill}" />
@@ -1470,7 +1487,6 @@
                 `;
             });
 
-            // Menambahkan garis bawah tabel dan frame pinggir
             rowsSvg += `
                 <line x1="40" y1="${startY + (rows.length * rowHeight)}" x2="760" y2="${startY + (rows.length * rowHeight)}" stroke="#cbd5e1" stroke-width="2" />
                 <line x1="40" y1="190" x2="40" y2="${startY + (rows.length * rowHeight)}" stroke="#cbd5e1" stroke-width="2" />
@@ -1481,7 +1497,6 @@
             <svg xmlns="http://www.w3.org/2000/svg" width="${svgWidth}" height="${svgHeight}" viewBox="0 0 ${svgWidth} ${svgHeight}">
                 <rect width="100%" height="100%" fill="#ffffff" />
                 
-                <!-- Header Latar Belakang Biru -->
                 <rect width="100%" height="110" fill="${primaryColor}" />
 
                 <text x="40" y="45" fill="rgba(255,255,255,0.8)" font-family="Arial, sans-serif" font-size="14" font-weight="bold" letter-spacing="2">TABEL CONTEKAN TITRASI</text>
@@ -1489,22 +1504,18 @@
                 <text x="760" y="45" fill="#ffffff" font-family="Arial, sans-serif" font-size="20" font-weight="bold" text-anchor="end">${appName}</text>
                 <text x="760" y="80" fill="rgba(255,255,255,0.8)" font-family="Arial, sans-serif" font-size="12" font-weight="normal" text-anchor="end">Dibuat: ${formatDateTime(new Date().toISOString()).date}</text>
 
-                <!-- Box Informasi -->
                 <rect x="40" y="130" width="720" height="40" rx="8" fill="#f1f5f9" />
                 <text x="60" y="155" font-family="Arial, sans-serif" font-size="14" fill="#475569">Sediaan: <tspan font-weight="bold" fill="#0ea5e9">${sediaan}</tspan></text>
                 <text x="320" y="155" font-family="Arial, sans-serif" font-size="14" fill="#475569">Konsentrasi: <tspan font-weight="bold" fill="#059669">${conc}</tspan></text>
                 <text x="580" y="155" font-family="Arial, sans-serif" font-size="14" fill="#475569">Berat Badan: <tspan font-weight="bold" fill="#d97706">${bb}</tspan></text>
 
-                <!-- Header Tabel -->
                 <rect x="40" y="190" width="720" height="30" fill="#e2e8f0" stroke="#cbd5e1" stroke-width="2"/>
                 <text x="160" y="210" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#1e293b" text-anchor="middle">TARGET DOSIS ${targetUnit}</text>
                 <text x="400" y="210" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#1e293b" text-anchor="middle">SYRINGE PUMP (cc/jam)</text>
                 <text x="640" y="210" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#1e293b" text-anchor="middle">INFUS PUMP (tetes/mnt)</text>
 
-                <!-- Baris Data Tabel -->
                 ${rowsSvg}
 
-                <!-- Footer Teks -->
                 <text x="${svgWidth/2}" y="${svgHeight - 20}" font-family="Arial, sans-serif" font-size="12" fill="#94a3b8" text-anchor="middle" font-style="italic">Diproduksi secara otomatis oleh kalkulator ${appName}</text>
             </svg>`;
 
@@ -1999,26 +2010,17 @@
             showConfirm('Reset Total', 'PERINGATAN! Semua data obat dan riwayat akan dihapus. Lanjutkan?', () => {
                 if (db) db.close();
                 
-                const req1 = indexedDB.deleteDatabase('SiOntelDB');
-                const req2 = indexedDB.deleteDatabase('OnDoseDB');
+                const req1 = indexedDB.deleteDatabase('Si_Ontel_DB');
                 
-                let done = 0;
-                const checkDone = () => {
-                    done++;
-                    if (done === 2) {
-                        localStorage.clear();
-                        toast('Aplikasi direset. Memuat ulang...', 'success');
-                        setTimeout(() => window.location.reload(), 500);
-                    }
+                req1.onsuccess = () => {
+                    localStorage.clear();
+                    toast('Aplikasi direset. Memuat ulang...', 'success');
+                    setTimeout(() => window.location.reload(), 1000);
                 };
-
-                req1.onsuccess = checkDone; req1.onerror = checkDone; req1.onblocked = checkDone;
-                req2.onsuccess = checkDone; req2.onerror = checkDone; req2.onblocked = checkDone;
-                
-                setTimeout(() => {
+                req1.onerror = () => {
                     localStorage.clear();
                     window.location.reload();
-                }, 2000);
+                };
             });
         }
 
