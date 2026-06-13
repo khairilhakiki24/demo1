@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buku Panduan Lengkap - SI ONTEL PRO</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+            color: #334155;
+            line-height: 1.6;
+        }
+
+        .doc-container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            padding: 3rem 4rem;
+            box-shadow: 0 10px 30px -10px rgba(0,0,0,0.1);
+            min-height: 100vh;
+        }
+
+        h1, h2, h3, h4 { color: #0f172a; font-weight: 700; }
+        
+        h1 { font-size: 2.5rem; margin-bottom: 1rem; border-bottom: 4px solid #0ea5e9; padding-bottom: 1rem; display: inline-block; }
+        h2 { font-size: 1.8rem; margin-top: 3rem; margin-bottom: 1.5rem; border-bottom: 2px solid #e2e8f0; padding-bottom: 0.5rem; display: flex; align-items: center; gap: 0.75rem; color: #0284c7; }
+        h3 { font-size: 1.3rem; margin-top: 2rem; margin-bottom: 1rem; color: #0f172a; }
+        
+        p { margin-bottom: 1rem; }
+        ul, ol { margin-bottom: 1.5rem; padding-left: 1.5rem; }
+        li { margin-bottom: 0.5rem; }
+        
+        .alert-box {
+            background-color: #f0f9ff;
+            border-left: 4px solid #0ea5e9;
+            padding: 1rem 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 0 0.5rem 0.5rem 0;
+        }
+
+        .alert-warning {
+            background-color: #fffbeb;
+            border-left: 4px solid #f59e0b;
+        }
+
+        .example-box {
+            background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            position: relative;
+        }
+        
+        .example-badge {
+            position: absolute;
+            top: -12px;
+            left: 1.5rem;
+            background: #10b981;
+            color: white;
+            font-size: 0.75rem;
+            font-weight: bold;
+            padding: 0.25rem 0.75rem;
+            border-radius: 99px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; }
+        th, td { border: 1px solid #cbd5e1; padding: 0.75rem 1rem; text-align: left; }
+        th { background-color: #f1f5f9; font-weight: 600; }
+
+        .btn-print {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: #0ea5e9;
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 99px;
+            font-weight: bold;
+            box-shadow: 0 10px 25px -5px rgba(14, 165, 233, 0.5);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            z-index: 50;
+        }
+        .btn-print:hover { transform: translateY(-3px); box-shadow: 0 15px 30px -5px rgba(14, 165, 233, 0.6); }
+
+        /* Print Styles */
+        @media print {
+            body { background-color: white; }
+            .doc-container { box-shadow: none; padding: 0; max-width: 100%; margin: 0; }
+            .btn-print { display: none; }
+            h2 { page-break-after: avoid; }
+            .example-box, .alert-box { page-break-inside: avoid; border: 1px solid #cbd5e1; }
+            @page { margin: 2cm; }
+        }
+    </style>
+</head>
+<body>
+
+    <button class="btn-print" onclick="window.print()">
+        <i data-lucide="printer"></i> Cetak / Simpan PDF
+    </button>
+
+    <div class="doc-container">
+        
+        <!-- HEADER -->
+        <header class="text-center mb-12">
+            <div class="w-20 h-20 bg-sky-500 text-white rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-xl">
+                <i data-lucide="activity" class="w-10 h-10"></i>
+            </div>
+            <h1>Buku Panduan Pengguna</h1>
+            <p class="text-xl text-slate-500 font-medium">Aplikasi Kalkulator Dosis Medis: <strong class="text-slate-800">SI ONTEL PRO</strong></p>
+            <p class="text-sm text-slate-400 mt-2">Versi 3.1 | Khusus Tenaga Kesehatan (ICU & Kamar Operasi)</p>
+        </header>
+
+        <!-- DAFTAR ISI -->
+        <div class="bg-slate-50 border border-slate-200 p-8 rounded-2xl mb-12">
+            <h3 class="mt-0 flex items-center gap-2 border-b border-slate-200 pb-4 mb-4"><i data-lucide="list"></i> Daftar Isi</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-2 font-medium text-sky-700">
+                <a href="#bab-1" class="hover:underline">1. Pengenalan Aplikasi</a>
+                <a href="#bab-2" class="hover:underline">2. Membaca Dashboard</a>
+                <a href="#bab-3" class="hover:underline">3. Fitur: Kalkulator Dosis (Fitur Utama)</a>
+                <a href="#bab-4" class="hover:underline">4. Fitur: Generator Tabel Titrasi (ICU/OK)</a>
+                <a href="#bab-5" class="hover:underline">5. Fitur: Manajemen Riwayat</a>
+                <a href="#bab-6" class="hover:underline">6. Fitur: Master Obat (Database)</a>
+                <a href="#bab-7" class="hover:underline">7. Fitur: Pengaturan & Backup Excel</a>
+                <a href="#bab-8" class="hover:underline">8. Keamanan Data & Privasi</a>
+            </div>
+        </div>
+
+        <!-- KONTEN BAB -->
+
+        <h2 id="bab-1"><i data-lucide="info"></i> Bab 1: Pengenalan Aplikasi</h2>
+        <p><strong>SI ONTEL PRO</strong> adalah aplikasi web progresif (PWA) yang dirancang khusus untuk mempermudah perawat dan dokter dalam menghitung pengenceran serta titrasi dosis obat secara presisi, cepat, dan aman.</p>
+        <p>Aplikasi ini sangat cocok digunakan di ruang kritis seperti <strong>ICU (Intensive Care Unit)</strong> dan <strong>Kamar Operasi (OK)</strong> di mana dosis obat (seperti <em>Norepinephrine, Dopamin, Dobutamin</em>, dll) sangat dinamis dan membutuhkan penyesuaian instan terhadap mesin <em>Syringe Pump</em> maupun <em>Infus Pump</em>.</p>
+        
+        <div class="alert-box">
+            <strong>Keunggulan Utama:</strong> Aplikasi ini berjalan <strong>100% Offline</strong> di perangkat Anda. Tidak memerlukan kuota internet setelah dimuat pertama kali, sehingga tidak akan terganggu oleh sinyal rumah sakit yang buruk.
+        </div>
+
+
+        <h2 id="bab-2"><i data-lucide="layout-dashboard"></i> Bab 2: Membaca Dashboard</h2>
+        <p>Dashboard adalah layar pertama yang Anda lihat saat membuka aplikasi. Halaman ini berfungsi sebagai pusat kendali dan ringkasan aktivitas Anda.</p>
+        <ul>
+            <li><strong>Ringkasan Statistik:</strong> Menampilkan total kalkulasi yang pernah Anda buat, pembagian berdasarkan penggunaan alat (Syringe vs Infus), dan jumlah Master Obat yang tersimpan.</li>
+            <li><strong>Grafik Top Obat:</strong> Grafik batang (Bar Chart) yang menunjukkan 10 obat apa saja yang paling sering Anda hitung. Sangat berguna untuk evaluasi tren pasien di ruangan.</li>
+            <li><strong>Riwayat Terakhir:</strong> Menampilkan 3 perhitungan terakhir yang Anda simpan agar mudah diakses kembali jika pasien yang sama membutuhkan evaluasi.</li>
+        </ul>
+
+
+        <h2 id="bab-3"><i data-lucide="syringe"></i> Bab 3: Kalkulator Dosis (Fitur Utama)</h2>
+        <p>Fitur ini digunakan untuk menghitung kecepatan alat secara instan berdasarkan target dosis tunggal yang diminta dokter.</p>
+        
+        <h3>Langkah-langkah Penggunaan:</h3>
+        <ol>
+            <li>Pilih <strong>Metode Pemberian</strong>: Syringe Pump (suntikan otomatis) atau Infus Pump (tetesan makro).</li>
+            <li>Pilih nama sediaan obat dari kotak pencarian. Data sediaan (mg) dan pelarut (cc) akan terisi otomatis.</li>
+            <li>Masukkan <strong>Berat Badan Pasien (kg)</strong>.</li>
+            <li>Masukkan <strong>Dosis Target</strong> yang diinstruksikan oleh Dokter beserta satuannya (misal: <code>mcg/kgBB/menit</code>, <code>mcg/menit</code>, atau <code>mg/jam</code>).</li>
+        </ol>
+
+        <div class="example-box">
+            <div class="example-badge">Contoh Kasus Nyata</div>
+            <p>Seorang pasien di ICU (Berat Badan: <strong>60 kg</strong>) diresepkan <strong>Norepinephrine</strong> dengan target dosis <strong>0.05 mcg/kg/menit</strong>.</p>
+            <p><strong>Input di Aplikasi:</strong></p>
+            <ul>
+                <li>Alat: Syringe Pump</li>
+                <li>Obat: Norepinephrine (Sediaan: 4 mg, Pelarut: 50 cc)</li>
+                <li>BB Pasien: 60 kg</li>
+                <li>Target: 0.05 mcg/kg/min</li>
+            </ul>
+            <p><strong>Hasil Otomatis Aplikasi:</strong></p>
+            <ul>
+                <li>Kecepatan yang di-set di alat: <strong class="text-sky-600">2.25 cc/jam</strong></li>
+                <li>Konsentrasi Obat: <strong>80.0 mcg/cc</strong></li>
+            </ul>
+            <p>Di bagian bawah, aplikasi juga akan memunculkan <strong>Panduan Langkah Klinis</strong> berurutan (dari cara melarutkan hingga mengatur mesin) untuk mencegah malpraktik (<em>medication error</em>).</p>
+        </div>
+
+
+        <h2 id="bab-4"><i data-lucide="table"></i> Bab 4: Generator Tabel Titrasi (ICU/OK)</h2>
+        <p>Fitur ini adalah "senjata rahasia" bagi perawat di ruang kritis. Ketimbang menghitung kalkulator berulang-ulang setiap dokter mengubah dosis, Anda bisa <strong>mencetak tabel contekan (cheat sheet) khusus untuk satu pasien</strong>.</p>
+
+        <h3>Cara Menggunakan:</h3>
+        <ol>
+            <li>Masuk ke menu <strong>Tabel Titrasi</strong>.</li>
+            <li>Pilih Obat dan masukkan <strong>Berat Badan Pasien</strong>.</li>
+            <li>Aplikasi akan memunculkan deretan <strong>Range Dosis</strong> standar (misal: 0.01, 0.02, 0.03, dst). <em>Anda bebas menambahkan atau menghapus angka di kotak tersebut sesuai kebutuhan rumah sakit.</em></li>
+            <li>Klik tombol <strong>Buat Tabel</strong>.</li>
+        </ol>
+
+        <h3>Fitur Cetak & Bagikan:</h3>
+        <p>Setelah tabel tercipta, Anda akan melihat dua tombol canggih:</p>
+        <ul>
+            <li><strong>Cetak Kertas:</strong> Mengubah layar HP menjadi mode cetak hitam-putih bersih. Menyembunyikan semua menu aplikasi sehingga Anda bisa mencetaknya via printer atau menyimpannya sebagai file PDF yang rapi untuk ditempel di tiang infus.</li>
+            <li><strong>Simpan Gambar:</strong> Aplikasi akan otomatis mengubah tabel HTML tersebut menjadi file gambar (PNG) berkualitas tinggi dan membuka opsi <em>Share</em>. Anda bisa langsung mengirimkan gambar tabel tersebut ke Grup WhatsApp perawat atau menyimpannya di Galeri HP.</li>
+        </ul>
+
+
+        <h2 id="bab-5"><i data-lucide="history"></i> Bab 5: Manajemen Riwayat</h2>
+        <p>Setiap kali Anda menekan tombol <strong>"Simpan Riwayat"</strong> atau <strong>"Ambil Gambar Label"</strong> di kalkulator, data tersebut masuk ke menu ini.</p>
+        <ul>
+            <li><strong>Pencarian Cepat:</strong> Anda bisa mengetik nama obat untuk mencari riwayat spesifik.</li>
+            <li><strong>Tombol Reload (<i data-lucide="refresh-cw" class="inline w-4 h-4"></i>):</strong> Mengklik tombol ini akan mengembalikan seluruh angka (BB, dosis, target) ke formulir Kalkulator Dosis. Sangat berguna saat melakukan operan jaga (<em>handover</em>) ke shift berikutnya.</li>
+        </ul>
+
+
+        <h2 id="bab-6"><i data-lucide="database"></i> Bab 6: Master Obat (Database Lokal)</h2>
+        <p>Aplikasi dilengkapi dengan 16 daftar obat darurat bawaan (seperti Epinephrine, Fentanyl, Propofol/Tiopol, dll). Namun, Anda memegang kendali penuh atas database ini.</p>
+        
+        <div class="alert-box alert-warning text-amber-900">
+            <strong>Catatan Penting:</strong> Kebijakan pengenceran (Volume Pelarut) bisa berbeda di tiap Rumah Sakit. Contoh: Amiodarone mungkin dilarutkan dalam 20cc di RS A, tetapi dalam 50cc di RS B.
+        </div>
+        
+        <p>Di menu ini, Anda bisa menekan tombol <strong>Tambah Obat</strong>, atau menekan ikon edit pada obat yang sudah ada untuk menyesuaikan angka sediaan standar (mg) dan volume pelarut standar (cc) sesuai Standar Operasional Prosedur (SOP) tempat Anda bekerja.</p>
+
+
+        <h2 id="bab-7"><i data-lucide="settings"></i> Bab 7: Pengaturan & Backup Data</h2>
+        <p>Personalisasi aplikasi sesuai keinginan Anda melalui menu Setelan.</p>
+        
+        <h3>Tampilan & Branding</h3>
+        <ul>
+            <li><strong>Nama Aplikasi:</strong> Anda bisa mengubah "SI ONTEL" menjadi nama ruangan Anda (Misal: "Kalkulator ICU Mawar"). Akan langsung mengubah teks di seluruh aplikasi dan struk cetak.</li>
+            <li><strong>Warna Tema:</strong> Ganti warna biru standar dengan warna favorit Anda.</li>
+            <li><strong>Logo:</strong> Unggah gambar logo Rumah Sakit Anda agar tercetak di label dan tabel.</li>
+        </ul>
+
+        <h3>Backup dan Restore (Microsoft Excel)</h3>
+        <p>Karena aplikasi ini berjalan 100% offline, jika Anda mengganti HP atau membersihkan cache browser, data Anda akan hilang. Untuk mengatasinya:</p>
+        <ul>
+            <li>Klik <strong>Backup Data (Excel)</strong> untuk mengunduh file `.xlsx` yang berisi seluruh riwayat dan Master Obat Anda.</li>
+            <li>Di HP yang baru, cukup klik <strong>Restore Data (Excel)</strong> dan masukkan file tersebut. Semua data Anda akan kembali seketika!</li>
+        </ul>
+
+
+        <h2 id="bab-8"><i data-lucide="shield-check"></i> Bab 8: Keamanan Data & Privasi</h2>
+        <p>Berbeda dengan aplikasi kalkulator web pada umumnya, SI ONTEL dibangun menggunakan teknologi PWA dan penyimpanan <strong>IndexedDB (Client-Side Storage)</strong>. Artinya:</p>
+        <ol>
+            <li>Data Anda tersimpan secara fisik di memori perangkat/HP Anda sendiri.</li>
+            <li>Tidak ada satu byte pun data (baik itu pengaturan, riwayat, atau obat) yang dikirim ke server pusat, pihak ketiga, maupun <em>cloud</em>.</li>
+            <li>Aman digunakan di lingkungan rumah sakit karena mematuhi privasi data klinis (meskipun aplikasi ini memang tidak meminta input nama pasien demi keamanan ekstra).</li>
+        </ol>
+
+        <!-- FOOTER -->
+        <footer class="mt-16 pt-8 border-t border-slate-200 text-center text-slate-500 text-sm">
+            <p>Dokumentasi ini disajikan untuk mempermudah penggunaan aplikasi medis SI ONTEL PRO.</p>
+            <p class="mt-2 font-bold text-slate-800">Didesain & Dikembangkan oleh Bejaja Digital &copy; 2026</p>
+        </footer>
+
+    </div>
+
+    <script>
+        // Inisialisasi Ikon
+        lucide.createIcons();
+    </script>
+</body>
+</html>

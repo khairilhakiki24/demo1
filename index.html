@@ -1,0 +1,2068 @@
+<!DOCTYPE html>
+<html lang="id" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#0ea5e9" id="meta-theme-color">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title id="app-title">SI ONTEL</title>
+    
+    <style>
+        :root {
+            --color-primary: #0ea5e9; 
+            --color-primary-light: color-mix(in srgb, var(--color-primary) 20%, transparent);
+        }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        .dark ::-webkit-scrollbar-thumb { background: #334155; }
+        
+        /* Animations & Interactions */
+        .btn-press { transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
+        .btn-press:active { transform: scale(0.96); }
+        
+        @keyframes fadeSlideUp { 
+            0% { opacity: 0; transform: translateY(15px); } 
+            100% { opacity: 1; transform: translateY(0); } 
+        }
+        .animate-fade-up { animation: fadeSlideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        
+        @keyframes slideInRight {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(0); }
+        }
+        .animate-slide-in { animation: slideInRight 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        
+        /* Glassmorphism */
+        .glass-nav { 
+            background: rgba(255, 255, 255, 0.85); 
+            backdrop-filter: blur(20px); 
+            -webkit-backdrop-filter: blur(20px); 
+            border-top: 1px solid rgba(0,0,0,0.05); 
+        }
+        .dark .glass-nav { 
+            background: rgba(15, 23, 42, 0.85); 
+            border-top: 1px solid rgba(255,255,255,0.05); 
+        }
+        
+        /* Safe Area Padding */
+        .pb-safe { padding-bottom: calc(120px + env(safe-area-inset-bottom, 24px)) !important; }
+        .pt-safe { padding-top: env(safe-area-inset-top, 0px) !important; }
+
+        /* Hide elements conditionally */
+        .view-section { display: none; }
+        .view-section.active { display: block; animation: fadeSlideUp 0.4s ease forwards; }
+
+        /* Responsive Data Container */
+        @media (max-width: 768px) {
+            .responsive-table thead { display: none; }
+            .responsive-table tbody tr {
+                display: flex; flex-direction: column; 
+                background: var(--tw-bg-opacity, white);
+                border-radius: 0.75rem; padding: 1rem; margin-bottom: 1rem;
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            }
+            .dark .responsive-table tbody tr { background: #1e293b; box-shadow: none; border: 1px solid #334155; }
+            .responsive-table tbody td {
+                display: flex; justify-content: space-between; align-items: center;
+                padding: 0.5rem 0; border: none; font-size: 0.875rem;
+            }
+            .responsive-table tbody td::before {
+                content: attr(data-label); font-weight: 600; color: #64748b; margin-right: 1rem;
+            }
+            .dark .responsive-table tbody td::before { color: #94a3b8; }
+            
+            .mobile-nav-item span { font-size: 0.65rem; }
+        }
+
+        /* PRINT STYLES - KHUSUS UNTUK TABEL CONTEKAN */
+        @media print {
+            body * { visibility: hidden; }
+            #print-area, #print-area * { visibility: visible; }
+            #print-area {
+                position: absolute; left: 0; top: 0; width: 100%;
+                background: white !important; color: black !important;
+                padding: 0 !important; margin: 0 !important;
+            }
+            #print-area table { border-collapse: collapse; width: 100%; }
+            #print-area th, #print-area td { border: 1px solid #000 !important; padding: 6px !important; color: black !important; }
+            #print-area th { background-color: #f3f4f6 !important; -webkit-print-color-adjust: exact; color: black !important;}
+            .no-print { display: none !important; }
+            html.dark #print-area, html.dark #print-area * { color: black !important; background: white !important; border-color: black !important; }
+        }
+    </style>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: 'var(--color-primary)', 
+                        primaryLight: 'var(--color-primary-light)',
+                        darkBg: '#0f172a',
+                        darkSurface: '#1e293b',
+                        darkBorder: '#334155'
+                    },
+                    fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] },
+                    boxShadow: {
+                        'premium': '0 20px 40px -15px rgba(0,0,0,0.05), 0 0 20px rgba(0,0,0,0.02)',
+                        'float': '0 10px 25px -5px rgba(var(--color-primary), 0.3)'
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-slate-50 text-slate-800 dark:bg-darkBg dark:text-slate-200 font-sans h-[100dvh] flex overflow-hidden selection:bg-primary selection:text-white transition-colors duration-300">
+
+    <!-- NOTIFIKASI TOAST -->
+    <div id="toast-container" class="fixed top-4 right-4 z-[100] flex flex-col gap-2 pt-safe pointer-events-none"></div>
+
+    <!-- MODAL KONFIRMASI -->
+    <div id="confirm-modal" class="fixed inset-0 z-[60] bg-slate-900/50 backdrop-blur-sm hidden flex items-center justify-center p-4 opacity-0 transition-opacity duration-300">
+        <div class="bg-white dark:bg-darkSurface rounded-2xl w-full max-w-sm shadow-2xl p-6 transform scale-95 transition-transform duration-300">
+            <div class="w-12 h-12 rounded-full bg-red-100 text-red-600 dark:bg-red-500/20 dark:text-red-400 flex items-center justify-center mb-4">
+                <i data-lucide="alert-triangle"></i>
+            </div>
+            <h3 class="text-xl font-bold mb-2" id="confirm-title">Konfirmasi</h3>
+            <p class="text-slate-500 dark:text-slate-400 mb-6" id="confirm-desc">Apakah Anda yakin melakukan aksi ini?</p>
+            <div class="flex gap-3">
+                <button onclick="closeConfirmModal()" class="flex-1 px-4 py-2.5 rounded-xl border border-slate-200 dark:border-darkBorder font-semibold text-slate-600 dark:text-slate-300 btn-press">Batal</button>
+                <button id="confirm-btn-action" class="flex-1 px-4 py-2.5 rounded-xl bg-red-600 text-white font-semibold btn-press shadow-lg shadow-red-600/30">Lanjutkan</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SIDEBAR DESKTOP -->
+    <aside class="hidden md:flex flex-col w-72 bg-white dark:bg-darkSurface border-r border-slate-200 dark:border-darkBorder h-full z-40 relative">
+        <div class="p-6 flex items-center gap-3 border-b border-slate-100 dark:border-darkBorder/50">
+            <div class="w-10 h-10 rounded-xl bg-primary text-white flex items-center justify-center shadow-lg shadow-primary/30 overflow-hidden">
+                <img src="" class="app-logo-img hidden w-full h-full object-cover">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="app-logo-icon"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+            </div>
+            <div>
+                <h1 class="font-bold text-xl tracking-tight brand-name">SI ONTEL</h1>
+                <p class="text-xs text-primary font-medium tracking-wider uppercase">Pro Edition</p>
+            </div>
+        </div>
+
+        <nav class="flex-1 overflow-y-auto py-6 px-4 space-y-1" id="desktop-nav">
+            <button onclick="navigate('dashboard')" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left font-medium transition-colors text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800" data-target="dashboard">
+                <i data-lucide="layout-dashboard" class="w-5 h-5"></i> Dashboard
+            </button>
+            <button onclick="navigate('calculator')" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left font-medium transition-colors text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800" data-target="calculator">
+                <i data-lucide="syringe" class="w-5 h-5"></i> Kalkulator Dosis
+            </button>
+            <button onclick="navigate('titrasi')" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left font-medium transition-colors text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800" data-target="titrasi">
+                <i data-lucide="table" class="w-5 h-5"></i> Tabel Titrasi (ICU/OK)
+            </button>
+            <button onclick="navigate('history')" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left font-medium transition-colors text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800" data-target="history">
+                <i data-lucide="history" class="w-5 h-5"></i> Riwayat Tersimpan
+            </button>
+            <button onclick="navigate('master')" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left font-medium transition-colors text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800" data-target="master">
+                <i data-lucide="database" class="w-5 h-5"></i> Master Obat
+            </button>
+            <button onclick="navigate('settings')" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left font-medium transition-colors text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800" data-target="settings">
+                <i data-lucide="settings" class="w-5 h-5"></i> Pengaturan
+            </button>
+        </nav>
+
+        <div class="p-6 border-t border-slate-100 dark:border-darkBorder/50">
+            <button onclick="toggleTheme()" class="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-slate-200 dark:border-darkBorder font-medium text-slate-600 dark:text-slate-300 btn-press">
+                <i data-lucide="moon" class="w-4 h-4 dark:hidden"></i>
+                <i data-lucide="sun" class="w-4 h-4 hidden dark:block"></i>
+                <span class="dark:hidden">Mode Gelap</span>
+                <span class="hidden dark:inline">Mode Terang</span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="flex-1 flex flex-col h-full relative w-full overflow-hidden">
+        
+        <!-- Mobile Header -->
+        <header class="md:hidden flex items-center justify-between p-4 bg-white/80 dark:bg-darkSurface/80 backdrop-blur-md border-b border-slate-200 dark:border-darkBorder z-30 pt-safe sticky top-0">
+            <div class="flex items-center gap-2">
+                <div class="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center shadow-md overflow-hidden">
+                    <img src="" class="app-logo-img hidden w-full h-full object-cover">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="app-logo-icon"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+                </div>
+                <h1 class="font-bold text-lg brand-name">SI ONTEL</h1>
+            </div>
+            <button onclick="toggleTheme()" class="w-10 h-10 flex items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 btn-press">
+                <i data-lucide="moon" class="w-5 h-5 dark:hidden"></i>
+                <i data-lucide="sun" class="w-5 h-5 hidden dark:block"></i>
+            </button>
+        </header>
+
+        <!-- Scrollable Area -->
+        <div class="flex-1 overflow-y-auto pb-safe px-4 py-6 md:p-10 w-full max-w-7xl mx-auto" id="main-scroll-area">
+            
+            <!-- VIEW: DASHBOARD -->
+            <section id="view-dashboard" class="view-section active">
+                <div class="mb-8">
+                    <h2 class="text-2xl md:text-3xl font-bold mb-2">Halo, Nakes Hebat! 👋</h2>
+                    <p class="text-slate-500 dark:text-slate-400">Ringkasan aktivitas perhitungan dosis hari ini.</p>
+                </div>
+
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                    <div class="bg-white dark:bg-darkSurface p-4 rounded-2xl shadow-premium border border-slate-100 dark:border-darkBorder relative overflow-hidden">
+                        <div class="absolute -right-4 -top-4 w-16 h-16 bg-primary/10 rounded-full"></div>
+                        <p class="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1">Total Kalkulasi</p>
+                        <h3 class="text-3xl font-bold text-slate-800 dark:text-white" id="stat-total">0</h3>
+                    </div>
+                    <div class="bg-white dark:bg-darkSurface p-4 rounded-2xl shadow-premium border border-slate-100 dark:border-darkBorder relative overflow-hidden">
+                        <div class="absolute -right-4 -top-4 w-16 h-16 bg-emerald-500/10 rounded-full"></div>
+                        <p class="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1">Syringe Pump</p>
+                        <h3 class="text-3xl font-bold text-slate-800 dark:text-white" id="stat-syringe">0</h3>
+                    </div>
+                    <div class="bg-white dark:bg-darkSurface p-4 rounded-2xl shadow-premium border border-slate-100 dark:border-darkBorder relative overflow-hidden">
+                        <div class="absolute -right-4 -top-4 w-16 h-16 bg-amber-500/10 rounded-full"></div>
+                        <p class="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1">Infus Pump</p>
+                        <h3 class="text-3xl font-bold text-slate-800 dark:text-white" id="stat-infus">0</h3>
+                    </div>
+                    <div class="bg-white dark:bg-darkSurface p-4 rounded-2xl shadow-premium border border-slate-100 dark:border-darkBorder relative overflow-hidden">
+                        <div class="absolute -right-4 -top-4 w-16 h-16 bg-purple-500/10 rounded-full"></div>
+                        <p class="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1">Master Obat</p>
+                        <h3 class="text-3xl font-bold text-slate-800 dark:text-white" id="stat-obat">0</h3>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-white dark:bg-darkSurface p-5 rounded-2xl shadow-premium border border-slate-100 dark:border-darkBorder">
+                        <h3 class="font-bold text-lg mb-4 flex items-center gap-2">
+                            <i data-lucide="bar-chart-2" class="text-primary w-5 h-5"></i> Top Obat (Sering Dipakai)
+                        </h3>
+                        <div class="relative h-64 w-full">
+                            <canvas id="dashboardChart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white dark:bg-darkSurface p-5 rounded-2xl shadow-premium border border-slate-100 dark:border-darkBorder">
+                        <h3 class="font-bold text-lg mb-4 flex items-center gap-2">
+                            <i data-lucide="clock" class="text-primary w-5 h-5"></i> Riwayat Terakhir
+                        </h3>
+                        <div class="space-y-3" id="recent-history-list">
+                            <!-- Populated by JS -->
+                        </div>
+                        <button onclick="navigate('history')" class="w-full mt-4 py-2 text-sm font-medium text-primary bg-primaryLight rounded-xl btn-press">Lihat Semua Menu Tersimpan</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- VIEW: KALKULATOR -->
+            <section id="view-calculator" class="view-section">
+                <div class="mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                    <div>
+                        <h2 class="text-2xl font-bold mb-1">Kalkulator Dosis & Pengenceran</h2>
+                        <p class="text-slate-500 dark:text-slate-400 text-sm">Hitung dosis obat secara instan, aman, dan akurat untuk mencegah kesalahan pemberian.</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                    <div class="lg:col-span-7 space-y-6">
+                        <div class="bg-white dark:bg-darkSurface p-5 md:p-6 rounded-2xl shadow-premium border border-slate-100 dark:border-darkBorder">
+                            <form id="form-calculator" class="space-y-5">
+                                
+                                <div>
+                                    <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Metode Pemberian Alat</label>
+                                    <div class="grid grid-cols-2 gap-3">
+                                        <label class="relative cursor-pointer">
+                                            <input type="radio" name="calc_method" value="syringe" class="peer sr-only" checked onchange="calculateDose()">
+                                            <div class="p-3 rounded-xl border-2 border-slate-200 dark:border-darkBorder text-center font-bold text-slate-600 dark:text-slate-400 peer-checked:border-primary peer-checked:bg-primary/5 peer-checked:text-primary transition-all flex items-center justify-center gap-2"><i data-lucide="syringe" class="w-5 h-5"></i> Syringe Pump</div>
+                                        </label>
+                                        <label class="relative cursor-pointer">
+                                            <input type="radio" name="calc_method" value="infus" class="peer sr-only" onchange="calculateDose()">
+                                            <div class="p-3 rounded-xl border-2 border-slate-200 dark:border-darkBorder text-center font-bold text-slate-600 dark:text-slate-400 peer-checked:border-primary peer-checked:bg-primary/5 peer-checked:text-primary transition-all flex items-center justify-center gap-2"><i data-lucide="droplet" class="w-5 h-5"></i> Infus Pump</div>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Pilih Obat (Dari Database)</label>
+                                        <div class="relative">
+                                            <select id="calc_drug" class="w-full pl-10 pr-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-darkBorder focus:ring-2 focus:ring-primary focus:border-primary font-medium transition-all outline-none appearance-none" onchange="fillDrugDefaults()">
+                                                <option value="" disabled selected>Pilih sediaan obat...</option>
+                                            </select>
+                                            <i data-lucide="pill" class="absolute left-3 top-3.5 w-5 h-5 text-slate-400"></i>
+                                            <i data-lucide="chevron-down" class="absolute right-3 top-3.5 w-5 h-5 text-slate-400 pointer-events-none"></i>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Berat Badan Pasien (kg)</label>
+                                        <div class="relative">
+                                            <input type="number" step="0.1" id="calc_weight" placeholder="Masukkan BB Pasien" class="w-full pl-10 pr-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-darkBorder focus:ring-2 focus:ring-primary focus:border-primary font-semibold transition-all outline-none" oninput="calculateDose()">
+                                            <i data-lucide="weight" class="absolute left-3 top-3.5 w-5 h-5 text-slate-400"></i>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Dosis Sediaan (mg)</label>
+                                        <input type="number" step="0.01" id="calc_dose_mg" placeholder="Misal: 4" class="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-darkBorder focus:ring-2 focus:ring-primary focus:border-primary font-semibold outline-none" oninput="calculateDose()">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Volume Pelarut (cc / ml)</label>
+                                        <input type="number" step="0.1" id="calc_volume_cc" placeholder="Misal: 50" class="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-darkBorder focus:ring-2 focus:ring-primary focus:border-primary font-semibold outline-none" oninput="calculateDose()">
+                                    </div>
+                                </div>
+
+                                <div class="p-4 rounded-xl bg-sky-50 dark:bg-sky-950/40 border border-sky-100 dark:border-sky-900/50">
+                                    <label class="block text-sm font-bold text-sky-800 dark:text-sky-300 mb-2">Dosis Target Yang Diminta Dokter</label>
+                                    <div class="flex items-center gap-3">
+                                        <input type="number" step="0.01" id="calc_target_dose" placeholder="0.00" class="w-full text-xl font-bold px-4 py-3 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-darkBorder focus:ring-2 focus:ring-sky-500 outline-none" oninput="calculateDose()">
+                                        <select id="calc_target_unit" class="py-3 px-4 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-darkBorder font-bold outline-none" onchange="calculateDose()">
+                                            <option value="mcg/kg/min">mcg/kgBB/menit</option>
+                                            <option value="mcg/min">mcg/menit</option>
+                                            <option value="mg/jam">mg/jam</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="lg:col-span-5 flex flex-col justify-between gap-6">
+                        <div id="result-card" class="bg-primary text-white p-6 md:p-8 rounded-2xl shadow-float relative overflow-hidden flex flex-col justify-between">
+                            <div class="absolute -right-10 -top-10 w-40 h-40 bg-white/10 rounded-full blur-2xl"></div>
+                            <div class="absolute -left-10 -bottom-10 w-40 h-40 bg-black/10 rounded-full blur-2xl"></div>
+                            
+                            <div class="relative z-10">
+                                <div class="flex justify-between items-start mb-4">
+                                    <div>
+                                        <p class="text-sky-100 font-bold text-xs uppercase tracking-wider">KECEPATAN YANG HARUS DI-SET</p>
+                                        <h3 class="text-2xl font-black mt-1" id="res_drug_name">-</h3>
+                                    </div>
+                                    <div class="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center backdrop-blur-sm shadow-inner">
+                                        <i data-lucide="activity" class="text-white w-6 h-6"></i>
+                                    </div>
+                                </div>
+
+                                <div class="mb-4">
+                                    <div class="text-6xl font-black tracking-tight flex items-baseline gap-2">
+                                        <span id="res_speed">0.0</span>
+                                        <span class="text-2xl font-bold text-sky-100" id="res_speed_unit">cc/jam</span>
+                                    </div>
+                                    <div class="mt-4 p-3 rounded-xl bg-black/15 backdrop-blur-md text-sm border border-white/10 font-mono space-y-1">
+                                        <div class="flex justify-between"><span>Konsentrasi:</span> <span class="font-bold" id="res_conc">0.0 mcg/cc</span></div>
+                                        <div class="flex justify-between"><span>BB / Target:</span> <span class="font-bold"><span id="res_bb">0</span> kg / <span id="res_target">0</span></span></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="relative z-10 flex gap-3 mt-2">
+                                <button onclick="saveCalculation()" class="flex-1 bg-white text-primary font-bold py-3.5 px-4 rounded-xl hover:bg-sky-50 active:scale-95 transition-all shadow-md flex items-center justify-center gap-2 text-sm btn-press">
+                                    <i data-lucide="save" class="w-4 h-4"></i> Simpan Riwayat
+                                </button>
+                                <button onclick="captureResult()" class="w-14 bg-white/20 hover:bg-white/30 text-white font-bold py-3.5 rounded-xl active:scale-95 transition-all flex items-center justify-center text-sm btn-press" title="Ambil Gambar Label">
+                                    <i data-lucide="camera" class="w-5 h-5"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="bg-white dark:bg-darkSurface p-5 md:p-6 rounded-2xl shadow-premium border border-slate-100 dark:border-darkBorder">
+                            <h4 class="font-bold text-slate-800 dark:text-white mb-3 flex items-center gap-2 text-sm text-emerald-600 dark:text-emerald-400">
+                                <i data-lucide="shield-check" class="w-5 h-5"></i> PANDUAN LANGKAH KLINIS PERAWAT
+                            </h4>
+                            <div id="nurse-guide-steps" class="text-xs text-slate-500 dark:text-slate-400 space-y-3 font-medium">
+                                <p class="italic text-center py-4">Masukkan data dosis obat dan target di formulir untuk memunculkan langkah kerja pengenceran secara otomatis.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- VIEW: TABEL TITRASI -->
+            <section id="view-titrasi" class="view-section">
+                <div class="mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4 no-print">
+                    <div>
+                        <h2 class="text-2xl font-bold mb-1">Generator Tabel Titrasi</h2>
+                        <p class="text-slate-500 dark:text-slate-400 text-sm">Buat tabel contekan (cheat sheet) dosis dinamis untuk ditempel di mesin Syringe/Infus Pump sesuai BB Pasien.</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 no-print mb-8">
+                    <!-- Form Generator Tabel -->
+                    <div class="lg:col-span-12">
+                        <div class="bg-white dark:bg-darkSurface p-5 md:p-6 rounded-2xl shadow-premium border border-slate-100 dark:border-darkBorder">
+                            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-5">
+                                <div class="md:col-span-1">
+                                    <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Pilih Obat</label>
+                                    <div class="relative">
+                                        <select id="tabel_drug" class="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-darkBorder focus:ring-2 focus:ring-primary outline-none appearance-none font-medium" onchange="autoFillTabelForm()">
+                                            <option value="" disabled selected>Pilih sediaan...</option>
+                                        </select>
+                                        <i data-lucide="pill" class="absolute left-3 top-3 w-4 h-4 text-slate-400"></i>
+                                    </div>
+                                </div>
+                                <div class="md:col-span-1">
+                                    <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">BB Pasien (kg)</label>
+                                    <input type="number" step="0.1" id="tabel_weight" placeholder="BB" class="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-darkBorder focus:ring-2 focus:ring-primary outline-none font-medium">
+                                </div>
+                                <div class="md:col-span-2">
+                                    <div class="flex gap-2">
+                                        <div class="w-1/2">
+                                            <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Sediaan (mg)</label>
+                                            <input type="number" step="0.01" id="tabel_mg" placeholder="mg" class="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-darkBorder focus:ring-2 focus:ring-primary outline-none font-medium">
+                                        </div>
+                                        <div class="w-1/2">
+                                            <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Pelarut (cc)</label>
+                                            <input type="number" step="0.1" id="tabel_cc" placeholder="cc" class="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-darkBorder focus:ring-2 focus:ring-primary outline-none font-medium">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+                                <div class="md:col-span-1">
+                                    <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Satuan Titrasi</label>
+                                    <select id="tabel_unit" class="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-darkBorder focus:ring-2 focus:ring-primary outline-none font-bold text-primary" onchange="setDefaultTitrationSteps()">
+                                        <option value="mcg/kg/min">mcg/kgBB/menit</option>
+                                        <option value="mcg/min">mcg/menit</option>
+                                        <option value="mg/jam">mg/jam</option>
+                                    </select>
+                                </div>
+                                <div class="md:col-span-2">
+                                    <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5 flex justify-between">
+                                        <span>Daftar Range Dosis (Koma terpisah)</span>
+                                        <button onclick="setDefaultTitrationSteps()" class="text-xs text-primary hover:underline font-normal">Reset Range</button>
+                                    </label>
+                                    <input type="text" id="tabel_steps" placeholder="Cth: 0.05, 0.1, 0.15, 0.2..." class="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-darkBorder focus:ring-2 focus:ring-primary outline-none text-sm font-mono tracking-tighter">
+                                </div>
+                                <div class="md:col-span-1">
+                                    <button onclick="generateTitrationTable()" class="w-full py-2.5 bg-primary text-white rounded-xl font-bold btn-press shadow-md shadow-primary/30 flex items-center justify-center gap-2">
+                                        <i data-lucide="wand-2" class="w-4 h-4"></i> Buat Tabel
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Area Hasil Tabel (Bisa Di-Print & Dijadikan Gambar) -->
+                <div id="print-area" class="bg-white dark:bg-darkSurface rounded-2xl shadow-premium border border-slate-100 dark:border-darkBorder overflow-hidden hidden">
+                    <div class="p-6 border-b border-slate-100 dark:border-darkBorder flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                        <div>
+                            <h3 class="font-black text-2xl uppercase tracking-tight text-slate-800 dark:text-white" id="out_tabel_title">TABEL TITRASI OBAT</h3>
+                            <div class="mt-2 space-y-1 text-sm font-medium text-slate-600 dark:text-slate-300 flex flex-wrap gap-4">
+                                <p>Sediaan: <span class="font-bold text-primary" id="out_tabel_sediaan">-</span></p>
+                                <p>Konsentrasi: <span class="font-bold text-emerald-600 dark:text-emerald-400" id="out_tabel_conc">-</span></p>
+                                <p>Berat Badan: <span class="font-bold text-amber-600 dark:text-amber-500" id="out_tabel_bb">-</span></p>
+                            </div>
+                        </div>
+                        
+                        <!-- TOMBOL PRINT & SHARE (NO-PRINT) -->
+                        <div class="no-print flex w-full md:w-auto gap-2">
+                            <button onclick="captureTableAndShare()" class="flex-1 md:flex-none px-4 py-2.5 bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 rounded-xl font-bold btn-press flex justify-center items-center gap-2 text-sm shadow-sm hover:bg-emerald-200 dark:hover:bg-emerald-800/40 transition-colors">
+                                <i data-lucide="share-2" class="w-4 h-4"></i> Simpan Gambar
+                            </button>
+                            <button onclick="window.print()" class="flex-1 md:flex-none px-4 py-2.5 bg-slate-800 dark:bg-slate-200 text-white dark:text-slate-900 rounded-xl font-bold btn-press flex justify-center items-center gap-2 text-sm shadow-lg hover:bg-slate-700 dark:hover:bg-slate-300 transition-colors">
+                                <i data-lucide="printer" class="w-4 h-4"></i> Print Kertas
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="overflow-x-auto p-4 md:p-6">
+                        <table class="w-full text-left border-collapse" id="generated-table">
+                            <thead>
+                                <tr class="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 uppercase text-xs md:text-sm tracking-wider border border-slate-300 dark:border-slate-600">
+                                    <th class="p-3 md:p-4 border border-slate-300 dark:border-slate-600 font-black text-center w-1/3">Target Dosis<br><span class="text-xs font-semibold text-primary" id="out_tabel_unit">-</span></th>
+                                    <th class="p-3 md:p-4 border border-slate-300 dark:border-slate-600 font-black text-center w-1/3">Syringe Pump<br><span class="text-xs font-semibold text-emerald-600">(cc / jam)</span></th>
+                                    <th class="p-3 md:p-4 border border-slate-300 dark:border-slate-600 font-black text-center w-1/3">Infus Pump Makro<br><span class="text-xs font-semibold text-amber-600">(tetes / menit)</span></th>
+                                </tr>
+                            </thead>
+                            <tbody id="out_tabel_body" class="text-slate-800 dark:text-slate-200 text-sm md:text-base font-medium">
+                                <!-- Data Generated Here -->
+                            </tbody>
+                        </table>
+                        <p class="text-xs text-slate-400 mt-4 text-center font-medium italic">*Tabel ini diproduksi oleh SI ONTEL - Aplikasi Kalkulator Dosis Medis.</p>
+                    </div>
+                </div>
+                
+                <div id="tabel-placeholder" class="text-center py-16 px-4 no-print border-2 border-dashed border-slate-200 dark:border-darkBorder rounded-2xl">
+                    <div class="w-16 h-16 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-4 text-slate-400">
+                        <i data-lucide="table-2" class="w-8 h-8"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-slate-600 dark:text-slate-300 mb-1">Tabel Belum Dibuat</h3>
+                    <p class="text-sm text-slate-500 max-w-md mx-auto">Isi form di atas dan klik "Buat Tabel" untuk menghasilkan tabel contekan titrasi dosis sesuai kebutuhan alat Anda.</p>
+                </div>
+            </section>
+
+            <!-- VIEW: RIWAYAT TERSIMPAN -->
+            <section id="view-history" class="view-section">
+                 <div class="flex justify-between items-end mb-6">
+                    <div>
+                        <h2 class="text-2xl font-bold mb-1">Riwayat Tersimpan</h2>
+                        <p class="text-slate-500 dark:text-slate-400 text-sm">Data kalkulasi yang telah disimpan. Anda bisa memuat ulang data ke form.</p>
+                    </div>
+                    <button onclick="clearHistory()" class="bg-red-50 text-red-600 dark:bg-red-500/10 dark:text-red-400 px-4 py-2 rounded-xl font-medium btn-press flex items-center gap-2 text-sm border border-red-100 dark:border-red-900/30">
+                        <i data-lucide="trash-2" class="w-4 h-4"></i> <span class="hidden md:inline">Bersihkan</span>
+                    </button>
+                </div>
+
+                <div class="bg-white dark:bg-darkSurface rounded-2xl shadow-premium border border-slate-100 dark:border-darkBorder overflow-hidden">
+                     <div class="p-4 border-b border-slate-100 dark:border-darkBorder flex gap-3">
+                        <div class="relative flex-1">
+                            <i data-lucide="search" class="absolute left-3 top-2.5 w-5 h-5 text-slate-400"></i>
+                            <input type="text" id="search-history" placeholder="Cari riwayat (akan memuat max 100 data)..." class="w-full pl-10 pr-4 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-darkBorder focus:outline-none focus:border-primary text-sm" oninput="debouncedRenderHistory()">
+                        </div>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse responsive-table">
+                            <thead>
+                                <tr class="bg-slate-50 dark:bg-slate-800/50 text-slate-500 dark:text-slate-400 text-sm uppercase tracking-wider border-b border-slate-200 dark:border-darkBorder">
+                                    <th class="p-4 font-semibold">Tanggal Simpan</th>
+                                    <th class="p-4 font-semibold">Alat</th>
+                                    <th class="p-4 font-semibold">Obat & Sediaan</th>
+                                    <th class="p-4 font-semibold">Kecepatan Dosis</th>
+                                    <th class="p-4 font-semibold text-right">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-history-body" class="divide-y divide-slate-100 dark:divide-darkBorder">
+                                <!-- Rendered by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- VIEW: MASTER OBAT -->
+            <section id="view-master" class="view-section">
+                <div class="flex justify-between items-end mb-6">
+                    <div>
+                        <h2 class="text-2xl font-bold mb-1">Master Obat</h2>
+                        <p class="text-slate-500 dark:text-slate-400 text-sm">Kelola daftar sediaan obat standar.</p>
+                    </div>
+                    <button onclick="openModalObat()" class="bg-primary text-white px-4 py-2 rounded-xl font-medium btn-press shadow-md shadow-primary/30 flex items-center gap-2">
+                        <i data-lucide="plus" class="w-4 h-4"></i> <span class="hidden md:inline">Tambah Obat</span>
+                    </button>
+                </div>
+
+                <div class="bg-white dark:bg-darkSurface rounded-2xl shadow-premium border border-slate-100 dark:border-darkBorder overflow-hidden">
+                    <div class="p-4 border-b border-slate-100 dark:border-darkBorder">
+                        <div class="relative">
+                            <i data-lucide="search" class="absolute left-3 top-2.5 w-5 h-5 text-slate-400"></i>
+                            <input type="text" id="search-obat" placeholder="Cari obat (akan memuat max 100 data)..." class="w-full md:w-72 pl-10 pr-4 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-darkBorder focus:outline-none focus:border-primary text-sm" oninput="debouncedRenderMasterObat()">
+                        </div>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse responsive-table">
+                            <thead>
+                                <tr class="bg-slate-50 dark:bg-slate-800/50 text-slate-500 dark:text-slate-400 text-sm uppercase tracking-wider border-b border-slate-200 dark:border-darkBorder">
+                                    <th class="p-4 font-semibold">Nama Obat</th>
+                                    <th class="p-4 font-semibold">Sediaan (mg)</th>
+                                    <th class="p-4 font-semibold">Pelarut (cc)</th>
+                                    <th class="p-4 font-semibold text-right">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-obat-body" class="divide-y divide-slate-100 dark:divide-darkBorder">
+                                <!-- Rendered by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- VIEW: PENGATURAN -->
+            <section id="view-settings" class="view-section">
+                <div class="mb-6">
+                    <h2 class="text-2xl font-bold mb-1">Pengaturan Sistem</h2>
+                    <p class="text-slate-500 dark:text-slate-400 text-sm">Sesuaikan aplikasi dengan kebutuhan Anda.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Tema & Tampilan -->
+                    <div class="bg-white dark:bg-darkSurface p-6 rounded-2xl shadow-premium border border-slate-100 dark:border-darkBorder">
+                        <h3 class="font-bold text-lg mb-4 flex items-center gap-2 border-b border-slate-100 dark:border-darkBorder pb-3">
+                            <i data-lucide="palette" class="text-primary w-5 h-5"></i> Tampilan & Branding
+                        </h3>
+                        
+                        <div class="space-y-5">
+                            <div>
+                                <label class="block text-sm font-medium mb-1.5">Nama Aplikasi (Brand)</label>
+                                <input type="text" id="setting-app-name" class="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-darkBorder focus:ring-2 focus:ring-primary outline-none" value="SI ONTEL">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium mb-1.5">Warna Utama (Aksen)</label>
+                                <div class="flex items-center gap-3">
+                                    <input type="color" id="setting-color" class="h-10 w-16 p-1 rounded border border-slate-200 dark:border-darkBorder bg-slate-50 dark:bg-slate-800 cursor-pointer" value="#0ea5e9" onchange="changeThemeColor(this.value)">
+                                    <span class="text-sm text-slate-500" id="color-hex-label">#0ea5e9</span>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium mb-1.5">Logo Aplikasi (URL / Upload)</label>
+                                <div class="flex gap-2 mb-2">
+                                    <input type="text" id="setting-logo-url" class="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-darkBorder focus:ring-2 focus:ring-primary outline-none text-sm" placeholder="URL Gambar Logo (Opsional)">
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <label class="cursor-pointer text-sm font-medium px-4 py-2.5 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-darkBorder rounded-xl hover:bg-slate-200 dark:hover:bg-slate-700 transition">
+                                        <i data-lucide="image" class="w-4 h-4 inline-block mr-1"></i> Upload Gambar
+                                        <input type="file" id="setting-logo-file" accept="image/*" class="hidden" onchange="handleLogoUpload(event)">
+                                    </label>
+                                    <button onclick="clearLogo()" class="text-xs text-red-500 hover:underline">Hapus Logo</button>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium mb-1.5">Zona Waktu Sistem</label>
+                                <select id="setting-timezone" class="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-darkBorder focus:ring-2 focus:ring-primary outline-none text-sm">
+                                    <option value="Asia/Jakarta">WIB (Waktu Indonesia Barat)</option>
+                                    <option value="Asia/Makassar">WITA (Waktu Indonesia Tengah)</option>
+                                    <option value="Asia/Jayapura">WIT (Waktu Indonesia Timur)</option>
+                                </select>
+                            </div>
+
+                             <button onclick="saveAppBrand()" class="w-full py-3 bg-primary text-white rounded-xl font-medium btn-press font-bold shadow-md shadow-primary/20">Simpan Pengaturan</button>
+                        </div>
+                    </div>
+
+                    <!-- Data & Backup -->
+                    <div class="bg-white dark:bg-darkSurface p-6 rounded-2xl shadow-premium border border-slate-100 dark:border-darkBorder">
+                        <h3 class="font-bold text-lg mb-4 flex items-center gap-2 border-b border-slate-100 dark:border-darkBorder pb-3">
+                            <i data-lucide="hard-drive" class="text-primary w-5 h-5"></i> Manajemen Data
+                        </h3>
+                        
+                        <div class="space-y-3">
+                            <button onclick="exportToExcel()" class="w-full flex items-center justify-between px-4 py-3 rounded-xl border border-slate-200 dark:border-darkBorder hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors btn-press">
+                                <div class="flex items-center gap-3">
+                                    <i data-lucide="download" class="text-emerald-500 w-5 h-5"></i>
+                                    <div class="text-left"><p class="font-medium">Backup Data (Excel)</p><p class="text-xs text-slate-500">Unduh master obat & riwayat</p></div>
+                                </div>
+                            </button>
+                            
+                            <label class="w-full flex items-center justify-between px-4 py-3 rounded-xl border border-slate-200 dark:border-darkBorder hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors btn-press cursor-pointer">
+                                <div class="flex items-center gap-3">
+                                    <i data-lucide="upload" class="text-blue-500 w-5 h-5"></i>
+                                    <div class="text-left"><p class="font-medium">Restore Data (Excel)</p><p class="text-xs text-slate-500">Unggah file backup .xlsx</p></div>
+                                </div>
+                                <input type="file" id="file-restore" accept=".xlsx, .xls" class="hidden" onchange="importFromExcel(event)">
+                            </label>
+
+                            <button onclick="confirmResetDB()" class="w-full flex items-center justify-between px-4 py-3 rounded-xl border border-red-200 dark:border-red-900/50 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors btn-press mt-4">
+                                <div class="flex items-center gap-3">
+                                    <i data-lucide="alert-octagon" class="text-red-500 w-5 h-5"></i>
+                                    <div class="text-left"><p class="font-medium text-red-600 dark:text-red-400">Reset Total Aplikasi</p><p class="text-xs text-slate-500">Hapus semua data offline</p></div>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Tentang Aplikasi -->
+                    <div class="bg-white dark:bg-darkSurface p-6 rounded-2xl shadow-premium border border-slate-100 dark:border-darkBorder md:col-span-2">
+                        <h3 class="font-bold text-lg mb-4 flex items-center gap-2 border-b border-slate-100 dark:border-darkBorder pb-3">
+                            <i data-lucide="info" class="text-primary w-5 h-5"></i> Informasi Aplikasi
+                        </h3>
+                        <div class="text-sm text-slate-600 dark:text-slate-400 space-y-4 leading-relaxed">
+                            <p><strong>SI ONTEL</strong> adalah aplikasi kalkulator medis offline berbasis PWA (Progressive Web App) yang dirancang khusus untuk mempermudah tenaga kesehatan dalam menghitung pengenceran dosis obat untuk Syringe Pump dan Infus Pump secara presisi, cepat, dan aman.</p>
+                            
+                            <div class="p-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800/50 rounded-xl text-amber-800 dark:text-amber-200">
+                                <h4 class="font-bold mb-1 flex items-center gap-2"><i data-lucide="shield-check" class="w-4 h-4"></i> Privacy Policy (Keamanan Data)</h4>
+                                <p>Aplikasi ini berjalan <strong>100% OFFLINE</strong> pada browser Anda. Tidak ada data pasien, riwayat kalkulasi, atau pengaturan yang dikirim ke server internet. Semua data disimpan secara lokal menggunakan teknologi IndexedDB di perangkat Anda (Client-Side Storage).</p>
+                            </div>
+                            
+                            <p class="text-center text-xs mt-6 text-slate-400">© 2026 SI ONTEL. Hak Cipta Dilindungi.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <div class="h-28 md:hidden w-full shrink-0"></div>
+
+        </div>
+    </main>
+
+    <!-- MOBILE BOTTOM NAV -->
+    <nav class="md:hidden fixed bottom-0 w-full glass-nav z-40 pb-[env(safe-area-inset-bottom)] no-print" id="bottom-nav">
+        <div class="flex justify-around items-center h-16 px-1 relative">
+            <div id="nav-indicator" class="absolute top-0 w-10 h-1 bg-primary rounded-b-full transition-all duration-300 ease-out" style="left: calc(8.33% - 20px);"></div>
+
+            <button onclick="navigate('dashboard')" class="mobile-nav-item flex-1 flex flex-col items-center justify-center gap-1 text-slate-400 hover:text-primary transition-colors data-[active=true]:text-primary" data-target="dashboard">
+                <i data-lucide="layout-dashboard" class="w-5 h-5 transition-transform duration-200"></i>
+                <span class="text-[9px] font-bold truncate px-1">Dasbor</span>
+            </button>
+            <button onclick="navigate('calculator')" class="mobile-nav-item flex-1 flex flex-col items-center justify-center gap-1 text-slate-400 hover:text-primary transition-colors data-[active=true]:text-primary" data-target="calculator">
+                <i data-lucide="syringe" class="w-5 h-5 transition-transform duration-200"></i>
+                <span class="text-[9px] font-bold truncate px-1">Hitung</span>
+            </button>
+            <button onclick="navigate('titrasi')" class="mobile-nav-item flex-1 flex flex-col items-center justify-center gap-1 text-slate-400 hover:text-primary transition-colors data-[active=true]:text-primary" data-target="titrasi">
+                <i data-lucide="table" class="w-5 h-5 transition-transform duration-200"></i>
+                <span class="text-[9px] font-bold truncate px-1">Tabel</span>
+            </button>
+            <button onclick="navigate('history')" class="mobile-nav-item flex-1 flex flex-col items-center justify-center gap-1 text-slate-400 hover:text-primary transition-colors data-[active=true]:text-primary" data-target="history">
+                <i data-lucide="history" class="w-5 h-5 transition-transform duration-200"></i>
+                <span class="text-[9px] font-bold truncate px-1">Riwayat</span>
+            </button>
+            <button onclick="navigate('master')" class="mobile-nav-item flex-1 flex flex-col items-center justify-center gap-1 text-slate-400 hover:text-primary transition-colors data-[active=true]:text-primary" data-target="master">
+                <i data-lucide="database" class="w-5 h-5 transition-transform duration-200"></i>
+                <span class="text-[9px] font-bold truncate px-1">Master</span>
+            </button>
+            <button onclick="navigate('settings')" class="mobile-nav-item flex-1 flex flex-col items-center justify-center gap-1 text-slate-400 hover:text-primary transition-colors data-[active=true]:text-primary" data-target="settings">
+                <i data-lucide="settings" class="w-5 h-5 transition-transform duration-200"></i>
+                <span class="text-[9px] font-bold truncate px-1">Setelan</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- MODAL TAMBAH/EDIT OBAT -->
+    <div id="modal-obat" class="fixed inset-0 z-[60] bg-slate-900/50 backdrop-blur-sm hidden flex items-center justify-center p-4 opacity-0 transition-opacity duration-300">
+        <div class="bg-white dark:bg-darkSurface rounded-2xl w-full max-w-md shadow-2xl transform scale-95 transition-transform duration-300">
+            <div class="p-5 border-b border-slate-100 dark:border-darkBorder flex justify-between items-center">
+                <h3 class="font-bold text-lg" id="modal-obat-title">Tambah Master Obat</h3>
+                <button onclick="closeModalObat()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"><i data-lucide="x"></i></button>
+            </div>
+            <div class="p-5 space-y-4">
+                <input type="hidden" id="form-obat-id">
+                <div>
+                    <label class="block text-sm font-medium mb-1.5">Nama Obat / Kategori</label>
+                    <input type="text" id="form-obat-nama" class="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-darkBorder focus:ring-2 focus:ring-primary outline-none" placeholder="Misal: Norepinephrine">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium mb-1.5">Dosis Sediaan (mg)</label>
+                        <input type="number" step="0.01" id="form-obat-mg" class="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-darkBorder focus:ring-2 focus:ring-primary outline-none" placeholder="Misal: 4">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1.5">Pelarut (cc)</label>
+                        <input type="number" step="0.1" id="form-obat-cc" class="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-darkBorder focus:ring-2 focus:ring-primary outline-none" placeholder="Misal: 50">
+                    </div>
+                </div>
+            </div>
+            <div class="p-5 border-t border-slate-100 dark:border-darkBorder bg-slate-50 dark:bg-slate-800/50 rounded-b-2xl">
+                <button onclick="saveMasterObat()" class="w-full py-3 bg-primary text-white rounded-xl font-bold btn-press shadow-lg shadow-primary/30">Simpan Obat</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCRIPTS START -->
+    <script>
+        // --- 1. INITIALIZATION, STATE & PERFORMANCE UTILS ---
+        let db;
+        let chartInstance = null;
+        let currentConfirmAction = null;
+
+        function debounce(func, wait) {
+            let timeout;
+            return function(...args) {
+                clearTimeout(timeout);
+                timeout = setTimeout(() => func.apply(this, args), wait);
+            };
+        }
+
+        const defaultData = [
+            { id: 1, nama: 'Norepinephrine', mg: 4, cc: 50 },
+            { id: 2, nama: 'Dobutamin', mg: 250, cc: 50 },
+            { id: 3, nama: 'Dopamin', mg: 200, cc: 50 },
+            { id: 4, nama: 'Epinephrine', mg: 1, cc: 50 },
+            { id: 5, nama: 'Midazolam', mg: 15, cc: 50 },
+            { id: 6, nama: 'Remifentanil', mg: 1, cc: 50 },
+            { id: 7, nama: 'Nicardipine', mg: 10, cc: 50 },
+            { id: 8, nama: 'Morphin', mg: 10, cc: 50 },
+            { id: 9, nama: 'Diltiazem', mg: 50, cc: 50 },
+            { id: 10, nama: 'Insulin', mg: 100, cc: 100 },
+            { id: 11, nama: 'NTG', mg: 10, cc: 50 },
+            { id: 12, nama: 'Heparin', mg: 25000, cc: 50 },
+            { id: 13, nama: 'Fentanyl', mg: 0.5, cc: 50 },
+            { id: 14, nama: 'Dexmed', mg: 0.2, cc: 50 },
+            { id: 15, nama: 'Tiopol', mg: 500, cc: 50 },
+            { id: 16, nama: 'Ketamin', mg: 500, cc: 50 }
+        ];
+
+        const debouncedRenderHistory = debounce(renderHistory, 300);
+        const debouncedRenderMasterObat = debounce(renderMasterObat, 300);
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            lucide.createIcons();
+            loadSettings();
+            await initDB();
+            
+            await loadCalculatorSelect();
+            await loadTabelSelect(); 
+            
+            setDefaultTitrationSteps(); 
+            navigate('dashboard');
+            
+            restoreFormState();
+            const inputs = document.querySelectorAll('#form-calculator input, #form-calculator select');
+            inputs.forEach(el => el.addEventListener('change', saveFormState));
+            inputs.forEach(el => el.addEventListener('input', saveFormState));
+        });
+
+        // --- 2. SETTINGS, THEMING & TIMEZONE HELPER ---
+        function loadSettings() {
+            if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+
+            const brand = localStorage.getItem('appName') || 'SI ONTEL';
+            const color = localStorage.getItem('themeColor') || '#0ea5e9';
+            const tz = localStorage.getItem('appTimezone') || 'Asia/Jakarta';
+            const logo = localStorage.getItem('appLogo');
+            
+            document.querySelectorAll('.brand-name').forEach(el => el.textContent = brand);
+            document.getElementById('setting-app-name').value = brand;
+            document.getElementById('app-title').textContent = brand;
+            
+            changeThemeColor(color, false);
+            document.getElementById('setting-color').value = color;
+            document.getElementById('setting-timezone').value = tz;
+
+            if (logo) {
+                if (!logo.startsWith('data:')) document.getElementById('setting-logo-url').value = logo;
+                else document.getElementById('setting-logo-url').value = 'File Gambar Terunggah';
+            }
+            applyLogo();
+        }
+
+        function toggleTheme() {
+            document.documentElement.classList.toggle('dark');
+            localStorage.theme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+            if (chartInstance) renderChart(); 
+        }
+
+        function changeThemeColor(hex, showToastNotif = true) {
+            document.documentElement.style.setProperty('--color-primary', hex);
+            document.getElementById('meta-theme-color').setAttribute('content', hex);
+            document.getElementById('color-hex-label').textContent = hex;
+            localStorage.setItem('themeColor', hex);
+            if(showToastNotif) toast('Warna tema diubah', 'success');
+        }
+
+        function saveAppBrand() {
+            const name = document.getElementById('setting-app-name').value || 'SI ONTEL';
+            const logoUrl = document.getElementById('setting-logo-url').value;
+            const tz = document.getElementById('setting-timezone').value;
+
+            localStorage.setItem('appName', name);
+            localStorage.setItem('appTimezone', tz);
+
+            if (logoUrl && !logoUrl.startsWith('File Gambar')) {
+                localStorage.setItem('appLogo', logoUrl);
+            } else if (!logoUrl) {
+                localStorage.removeItem('appLogo');
+            }
+
+            document.querySelectorAll('.brand-name').forEach(el => el.textContent = name);
+            document.getElementById('app-title').textContent = name;
+            
+            applyLogo();
+            renderHistory();
+            loadDashboard();
+            
+            toast('Pengaturan disimpan', 'success');
+        }
+
+        function handleLogoUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const base64 = e.target.result;
+                localStorage.setItem('appLogo', base64);
+                document.getElementById('setting-logo-url').value = 'File Gambar Terunggah';
+                applyLogo();
+                toast('Logo diunggah. Klik Simpan.', 'success');
+            };
+            reader.readAsDataURL(file);
+            event.target.value = ''; 
+        }
+
+        function clearLogo() {
+            localStorage.removeItem('appLogo');
+            document.getElementById('setting-logo-url').value = '';
+            applyLogo();
+            toast('Logo aplikasi dihapus', 'success');
+        }
+
+        function applyLogo() {
+            const logo = localStorage.getItem('appLogo');
+            const imgElems = document.querySelectorAll('.app-logo-img');
+            const iconElems = document.querySelectorAll('.app-logo-icon');
+
+            if (logo) {
+                imgElems.forEach(el => { el.src = logo; el.classList.remove('hidden'); });
+                iconElems.forEach(el => el.classList.add('hidden'));
+            } else {
+                imgElems.forEach(el => { el.src = ''; el.classList.add('hidden'); });
+                iconElems.forEach(el => el.classList.remove('hidden'));
+            }
+        }
+
+        function formatDateTime(dateStr) {
+            const tz = localStorage.getItem('appTimezone') || 'Asia/Jakarta';
+            const dateObj = new Date(dateStr);
+            if(isNaN(dateObj)) return { date: '-', time: '-' };
+
+            const dateOpt = { timeZone: tz, day: '2-digit', month: 'short', year: 'numeric' };
+            const timeOpt = { timeZone: tz, hour: '2-digit', minute: '2-digit', hour12: false };
+
+            const dateFmt = dateObj.toLocaleDateString('id-ID', dateOpt);
+            const timeFmt = dateObj.toLocaleTimeString('id-ID', timeOpt).replace(/\./g, ':');
+
+            let tzLabel = 'WIB';
+            if (tz === 'Asia/Makassar') tzLabel = 'WITA';
+            if (tz === 'Asia/Jayapura') tzLabel = 'WIT';
+
+            return { date: dateFmt, time: `${timeFmt} ${tzLabel}` };
+        }
+
+        // --- 3. DATABASE (IndexedDB) ---
+        function initDB() {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open('Si_Ontel_DB', 4);
+                
+                request.onupgradeneeded = (e) => {
+                    db = e.target.result;
+                    if (!db.objectStoreNames.contains('obat')) {
+                        db.createObjectStore('obat', { keyPath: 'id', autoIncrement: true });
+                    }
+                    if (!db.objectStoreNames.contains('history')) {
+                        db.createObjectStore('history', { keyPath: 'id', autoIncrement: true });
+                    }
+                };
+
+                request.onsuccess = (e) => {
+                    db = e.target.result;
+                    const tx = db.transaction('obat', 'readwrite');
+                    const store = tx.objectStore('obat');
+                    const countReq = store.count();
+                    
+                    countReq.onsuccess = () => {
+                        if (countReq.result === 0) {
+                            defaultData.forEach(d => store.put(d));
+                            tx.oncomplete = () => {
+                                renderMasterObat(); 
+                                resolve(db);
+                            };
+                            tx.onerror = (err) => reject(err);
+                        } else {
+                            renderMasterObat(); 
+                            resolve(db);
+                        }
+                    };
+                    
+                    countReq.onerror = () => {
+                        renderMasterObat();
+                        resolve(db);
+                    };
+                };
+                
+                request.onerror = (e) => {
+                    console.error('DB Error', e);
+                    reject(e);
+                };
+            });
+        }
+
+        function txDB(storeName, mode) {
+            return db.transaction(storeName, mode).objectStore(storeName);
+        }
+
+        // --- 4. NAVIGATION & UI LOGIC ---
+        function navigate(targetId) {
+            document.querySelectorAll('.view-section').forEach(el => {
+                el.classList.remove('active');
+            });
+            document.getElementById(`view-${targetId}`).classList.add('active');
+            document.getElementById('main-scroll-area').scrollTop = 0;
+
+            document.querySelectorAll('#desktop-nav .nav-item').forEach(el => {
+                if(el.dataset.target === targetId) {
+                    el.classList.add('bg-primary/10', 'text-primary', 'font-bold');
+                    el.classList.remove('text-slate-500', 'hover:bg-slate-100', 'dark:hover:bg-slate-800');
+                    el.querySelector('i').classList.add('fill-primary/20');
+                } else {
+                    el.classList.remove('bg-primary/10', 'text-primary', 'font-bold');
+                    el.classList.add('text-slate-500', 'hover:bg-slate-100', 'dark:hover:bg-slate-800');
+                    el.querySelector('i').classList.remove('fill-primary/20');
+                }
+            });
+
+            const mobileItems = document.querySelectorAll('.mobile-nav-item');
+            let found = false;
+            mobileItems.forEach((el, index) => {
+                if(el.dataset.target === targetId) {
+                    el.setAttribute('data-active', 'true');
+                    el.querySelector('i').classList.add('fill-primary/20', '-translate-y-1');
+                    const indicator = document.getElementById('nav-indicator');
+                    const percentPos = 8.33 + (index * 16.66);
+                    if(indicator) indicator.style.left = `calc(${percentPos}% - 20px)`;
+                    found = true;
+                } else {
+                    el.setAttribute('data-active', 'false');
+                    el.querySelector('i').classList.remove('fill-primary/20', '-translate-y-1');
+                }
+            });
+            if(!found) document.getElementById('nav-indicator').style.opacity = '0';
+            else document.getElementById('nav-indicator').style.opacity = '1';
+
+            if(targetId === 'dashboard') loadDashboard();
+            if(targetId === 'master') renderMasterObat();
+            if(targetId === 'history') renderHistory();
+            if(targetId === 'calculator') loadCalculatorSelect();
+            if(targetId === 'titrasi') loadTabelSelect();
+        }
+
+        // --- 5. KALKULATOR LOGIC ---
+        function saveFormState() {
+            const state = {
+                method: document.querySelector('input[name="calc_method"]:checked').value,
+                drug: document.getElementById('calc_drug').value,
+                weight: document.getElementById('calc_weight').value,
+                mg: document.getElementById('calc_dose_mg').value,
+                cc: document.getElementById('calc_volume_cc').value,
+                target: document.getElementById('calc_target_dose').value,
+                unit: document.getElementById('calc_target_unit').value
+            };
+            localStorage.setItem('calcState', JSON.stringify(state));
+        }
+
+        function restoreFormState() {
+            const state = JSON.parse(localStorage.getItem('calcState'));
+            if(state) {
+                document.querySelector(`input[name="calc_method"][value="${state.method}"]`).checked = true;
+                if(state.weight) document.getElementById('calc_weight').value = state.weight;
+                if(state.mg) document.getElementById('calc_dose_mg').value = state.mg;
+                if(state.cc) document.getElementById('calc_volume_cc').value = state.cc;
+                if(state.target) document.getElementById('calc_target_dose').value = state.target;
+                if(state.unit) document.getElementById('calc_target_unit').value = state.unit;
+            }
+        }
+
+        function loadCalculatorSelect() {
+            return new Promise((resolve) => {
+                const store = txDB('obat', 'readonly');
+                const request = store.getAll();
+                request.onsuccess = () => {
+                    const select = document.getElementById('calc_drug');
+                    const state = JSON.parse(localStorage.getItem('calcState'));
+                    
+                    let html = '<option value="" disabled selected>Pilih sediaan obat...</option>';
+                    request.result.forEach(o => {
+                        html += `<option value="${o.id}" data-mg="${o.mg}" data-cc="${o.cc}" data-name="${o.nama}">${o.nama} (${o.mg}mg/${o.cc}cc)</option>`;
+                    });
+                    select.innerHTML = html;
+                    
+                    if(state && state.drug) {
+                        select.value = state.drug;
+                    }
+                    calculateDose();
+                    resolve();
+                };
+            });
+        }
+
+        function fillDrugDefaults() {
+            const select = document.getElementById('calc_drug');
+            const option = select.options[select.selectedIndex];
+            if(option && option.value) {
+                document.getElementById('calc_dose_mg').value = option.getAttribute('data-mg');
+                document.getElementById('calc_volume_cc').value = option.getAttribute('data-cc');
+                calculateDose();
+                saveFormState();
+            }
+        }
+
+        function calculateDose() {
+            const method = document.querySelector('input[name="calc_method"]:checked').value;
+            const select = document.getElementById('calc_drug');
+            const option = select.options[select.selectedIndex];
+            const drugName = option && option.value ? option.getAttribute('data-name') : 'Belum pilih obat';
+            
+            const weight = parseFloat(document.getElementById('calc_weight').value) || 0;
+            const mg = parseFloat(document.getElementById('calc_dose_mg').value) || 0;
+            const cc = parseFloat(document.getElementById('calc_volume_cc').value) || 0;
+            const target = parseFloat(document.getElementById('calc_target_dose').value) || 0;
+            const unit = document.getElementById('calc_target_unit').value;
+
+            document.getElementById('res_drug_name').textContent = drugName;
+            document.getElementById('res_bb').textContent = weight;
+            document.getElementById('res_target').textContent = target;
+
+            const guideStepsEl = document.getElementById('nurse-guide-steps');
+
+            if(mg > 0 && cc > 0 && target > 0) {
+                const total_mcg = mg * 1000;
+                const conc_mcg_per_cc = total_mcg / cc;
+                document.getElementById('res_conc').textContent = conc_mcg_per_cc.toFixed(1) + ' mcg/cc';
+
+                let speed = 0;
+                
+                if(unit === 'mcg/kg/min') {
+                    if(weight === 0) { speed = 0; } 
+                    else { speed = (target * weight * 60) / conc_mcg_per_cc; }
+                } else if (unit === 'mcg/min') {
+                    speed = (target * 60) / conc_mcg_per_cc;
+                } else if (unit === 'mg/jam') {
+                    const conc_mg_per_cc = mg / cc;
+                    speed = target / conc_mg_per_cc;
+                }
+
+                const resultSpeed = speed > 0 ? speed.toFixed(2) : '0.0';
+                
+                if(method === 'infus') {
+                    const drops = (speed * 20) / 60; // 20 gtt/ml
+                    document.getElementById('res_speed_unit').textContent = 'gtt/mnt';
+                    document.getElementById('res_speed').textContent = drops > 0 ? drops.toFixed(1) : '0.0';
+
+                    guideStepsEl.innerHTML = `
+                        <div class="space-y-2">
+                            <div class="flex gap-2">
+                                <span class="w-5 h-5 flex items-center justify-center bg-emerald-100 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-400 rounded-full text-[10px] font-black shrink-0">1</span>
+                                <p>Larutkan <strong>${drugName} ${mg} mg</strong> dengan pelarut hingga total <strong>${cc} cc</strong> di botol infus.</p>
+                            </div>
+                            <div class="flex gap-2">
+                                <span class="w-5 h-5 flex items-center justify-center bg-emerald-100 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-400 rounded-full text-[10px] font-black shrink-0">2</span>
+                                <p>Pastikan konsentrasi cairan infus adalah <strong>${conc_mcg_per_cc.toFixed(1)} mcg/cc</strong>.</p>
+                            </div>
+                            <div class="flex gap-2">
+                                <span class="w-5 h-5 flex items-center justify-center bg-emerald-100 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-400 rounded-full text-[10px] font-black shrink-0">3</span>
+                                <p>Pasang set infus makro (faktor 20) ke <strong>Infus Pump</strong>.</p>
+                            </div>
+                            <div class="flex gap-2">
+                                <span class="w-5 h-5 flex items-center justify-center bg-emerald-100 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-400 rounded-full text-[10px] font-black shrink-0">4</span>
+                                <p>Atur tetesan ke: <strong class="text-primary text-sm">${drops.toFixed(1)} tetes/menit</strong> (laju alir mesin <strong class="text-slate-700 dark:text-slate-300">${speed.toFixed(1)} cc/jam</strong>).</p>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    document.getElementById('res_speed_unit').textContent = 'cc/jam';
+                    document.getElementById('res_speed').textContent = resultSpeed;
+
+                    guideStepsEl.innerHTML = `
+                        <div class="space-y-2">
+                            <div class="flex gap-2">
+                                <span class="w-5 h-5 flex items-center justify-center bg-emerald-100 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-400 rounded-full text-[10px] font-black shrink-0">1</span>
+                                <p>Masukkan <strong>${drugName} ${mg} mg</strong> ke Spuit 50 cc.</p>
+                            </div>
+                            <div class="flex gap-2">
+                                <span class="w-5 h-5 flex items-center justify-center bg-emerald-100 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-400 rounded-full text-[10px] font-black shrink-0">2</span>
+                                <p>Encerkan dengan cairan pelarut hingga volume tepat <strong>${cc} cc</strong>.</p>
+                            </div>
+                            <div class="flex gap-2">
+                                <span class="w-5 h-5 flex items-center justify-center bg-emerald-100 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-400 rounded-full text-[10px] font-black shrink-0">3</span>
+                                <p>Konsentrasi cairan dalam Spuit adalah <strong>${conc_mcg_per_cc.toFixed(1)} mcg/cc</strong>.</p>
+                            </div>
+                            <div class="flex gap-2">
+                                <span class="w-5 h-5 flex items-center justify-center bg-emerald-100 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-400 rounded-full text-[10px] font-black shrink-0">4</span>
+                                <p>Nyalakan <strong>Syringe Pump</strong>, set aliran ke: <strong class="text-primary text-sm">${resultSpeed} cc/jam</strong>.</p>
+                            </div>
+                        </div>
+                    `;
+                }
+            } else {
+                document.getElementById('res_conc').textContent = '0 mcg/cc';
+                document.getElementById('res_speed').textContent = '0.0';
+                document.getElementById('res_speed_unit').textContent = method === 'infus' ? 'gtt/mnt' : 'cc/jam';
+                guideStepsEl.innerHTML = `<p class="italic text-center py-4 text-slate-400">Masukkan data dosis obat dan target di formulir untuk memunculkan langkah kerja pengenceran secara otomatis.</p>`;
+            }
+        }
+
+        function saveCalculation() {
+            try {
+                const speedStr = document.getElementById('res_speed').textContent;
+                if(speedStr === '0.0' || speedStr === 'NaN' || speedStr === '0' || speedStr === '-') {
+                    toast('Lengkapi form kalkulasi dengan benar dahulu!', 'error');
+                    return;
+                }
+
+                const methodInput = document.querySelector('input[name="calc_method"]:checked');
+                const historyData = {
+                    date: new Date().toISOString(),
+                    method: methodInput ? methodInput.value : 'syringe',
+                    drugId: document.getElementById('calc_drug').value || '',
+                    drugName: document.getElementById('res_drug_name').textContent || '-',
+                    weight: document.getElementById('calc_weight').value || '0',
+                    mg: document.getElementById('calc_dose_mg').value || '0',
+                    cc: document.getElementById('calc_volume_cc').value || '0',
+                    target: document.getElementById('calc_target_dose').value || '0',
+                    targetUnit: document.getElementById('calc_target_unit').value || '',
+                    speed: speedStr,
+                    speedUnit: document.getElementById('res_speed_unit').textContent || ''
+                };
+
+                const store = txDB('history', 'readwrite');
+                const req = store.add(historyData);
+                
+                req.onsuccess = () => {
+                    toast('Kalkulasi disimpan ke Riwayat!', 'success');
+                    renderHistory(); 
+                    loadDashboard(); 
+                };
+                req.onerror = (e) => toast('Gagal menyimpan kalkulasi', 'error');
+            } catch (err) {
+                toast('Gagal! Pastikan semua data terisi.', 'error');
+            }
+        }
+
+        function captureResult() {
+            const drugName = document.getElementById('res_drug_name').textContent;
+            const speed = document.getElementById('res_speed').textContent;
+            const speedUnit = document.getElementById('res_speed_unit').textContent;
+            const conc = document.getElementById('res_conc').textContent;
+            const bb = document.getElementById('res_bb').textContent;
+            const target = document.getElementById('res_target').textContent;
+            
+            const targetUnitSelect = document.getElementById('calc_target_unit');
+            const targetUnit = targetUnitSelect.options[targetUnitSelect.selectedIndex].text;
+
+            const primaryColor = getComputedStyle(document.documentElement).getPropertyValue('--color-primary').trim() || '#0ea5e9';
+            const appName = localStorage.getItem('appName') || 'SI ONTEL';
+            
+            const dtFormat = formatDateTime(new Date().toISOString());
+            const timeStr = `${dtFormat.date} - ${dtFormat.time}`;
+
+            const svgString = `
+            <svg xmlns="http://www.w3.org/2000/svg" width="800" height="480" viewBox="0 0 800 480">
+                <defs>
+                    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="${primaryColor}" />
+                        <stop offset="100%" stop-color="#0284c7" />
+                    </linearGradient>
+                </defs>
+                <rect width="800" height="480" rx="24" fill="url(#bgGrad)" />
+                <circle cx="750" cy="50" r="200" fill="#ffffff" opacity="0.08" />
+                <circle cx="50" cy="430" r="250" fill="#000000" opacity="0.08" />
+                
+                <text x="60" y="80" fill="rgba(255,255,255,0.7)" font-family="Arial, Helvetica, sans-serif" font-size="16" font-weight="bold" letter-spacing="3">LABEL DOSIS &amp; PENGENCERAN OBAT</text>
+                <text x="60" y="135" fill="#ffffff" font-family="Arial, Helvetica, sans-serif" font-size="44" font-weight="900" letter-spacing="-1">${drugName}</text>
+                <text x="740" y="80" fill="rgba(255,255,255,0.95)" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="bold" text-anchor="end">${appName}</text>
+                <text x="740" y="110" fill="rgba(255,255,255,0.6)" font-family="Arial, Helvetica, sans-serif" font-size="14" font-weight="normal" text-anchor="end">${timeStr}</text>
+                
+                <text x="60" y="280">
+                    <tspan fill="#ffffff" font-family="Arial, Helvetica, sans-serif" font-size="145" font-weight="900">${speed}</tspan>
+                    <tspan fill="#ffffff" font-family="Arial, Helvetica, sans-serif" font-size="34" font-weight="bold"> ${speedUnit}</tspan>
+                </text>
+                
+                <rect x="60" y="330" width="680" height="100" rx="16" fill="rgba(0,0,0,0.18)" stroke="rgba(255,255,255,0.15)" stroke-width="1.5"/>
+                
+                <text x="90" y="370" font-family="Arial, Helvetica, sans-serif" font-size="20" fill="rgba(255,255,255,0.65)">Konsentrasi Sediaan:</text>
+                <text x="710" y="370" font-family="Arial, Helvetica, sans-serif" font-size="20" font-weight="bold" fill="#ffffff" text-anchor="end">${conc}</text>
+                
+                <text x="90" y="405" font-family="Arial, Helvetica, sans-serif" font-size="20" fill="rgba(255,255,255,0.65)">BB / Target Dosis:</text>
+                <text x="710" y="405" font-family="Arial, Helvetica, sans-serif" font-size="20" font-weight="bold" fill="#ffffff" text-anchor="end">${bb} kg / ${target} ${targetUnit}</text>
+            </svg>`;
+
+            toast('Memproses gambar...', 'success');
+
+            const blob = new Blob([svgString], {type: 'image/svg+xml;charset=utf-8'});
+            const url = URL.createObjectURL(blob);
+            const img = new Image();
+            
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                canvas.width = 800;
+                canvas.height = 480;
+                const ctx = canvas.getContext('2d');
+                ctx.imageSmoothingEnabled = true;
+                ctx.imageSmoothingQuality = 'high';
+                ctx.drawImage(img, 0, 0);
+                URL.revokeObjectURL(url); 
+                
+                try {
+                    canvas.toBlob((pngBlob) => {
+                        const file = new File([pngBlob], `Label-${drugName.replace(/\s+/g, '-')}.png`, { type: 'image/png' });
+                        
+                        // Cek apakah HP support fitur Share langsung
+                        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                            navigator.share({
+                                files: [file],
+                                title: `Label Dosis ${drugName}`,
+                                text: `Label Pengenceran Obat ${drugName} - Dibuat dengan ${appName}`
+                            }).then(() => toast('Berhasil dibagikan!', 'success'))
+                              .catch(() => fallbackDownload(pngBlob, file.name));
+                        } else {
+                            fallbackDownload(pngBlob, file.name);
+                        }
+                    }, 'image/png', 1.0);
+                } catch (err) {
+                    toast('Gagal mengekspor gambar.', 'error');
+                }
+            };
+            img.onerror = () => toast('Sistem gagal memproses format.', 'error');
+            img.src = url;
+        }
+
+        // Fungsi bantuan untuk download otomatis jika fitur Share tidak jalan
+        function fallbackDownload(blob, filename) {
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = filename;
+            link.click();
+            URL.revokeObjectURL(link.href);
+            toast('Gambar tersimpan di Galeri/Unduhan', 'success');
+        }
+
+        // --- 5B. TABEL TITRASI (NEW FEATURE) ---
+
+        function loadTabelSelect() {
+            return new Promise((resolve) => {
+                const store = txDB('obat', 'readonly');
+                const request = store.getAll();
+                request.onsuccess = () => {
+                    const select = document.getElementById('tabel_drug');
+                    let html = '<option value="" disabled selected>Pilih sediaan obat...</option>';
+                    request.result.forEach(o => {
+                        html += `<option value="${o.id}" data-mg="${o.mg}" data-cc="${o.cc}" data-name="${o.nama}">${o.nama} (${o.mg}mg/${o.cc}cc)</option>`;
+                    });
+                    select.innerHTML = html;
+                    resolve();
+                };
+            });
+        }
+
+        function autoFillTabelForm() {
+            const select = document.getElementById('tabel_drug');
+            const option = select.options[select.selectedIndex];
+            if(option && option.value) {
+                document.getElementById('tabel_mg').value = option.getAttribute('data-mg');
+                document.getElementById('tabel_cc').value = option.getAttribute('data-cc');
+            }
+        }
+
+        function setDefaultTitrationSteps() {
+            const unit = document.getElementById('tabel_unit').value;
+            const inputSteps = document.getElementById('tabel_steps');
+            
+            if(unit === 'mcg/kg/min') {
+                inputSteps.value = "0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.08, 0.1, 0.15, 0.2, 0.25, 0.3, 0.4, 0.5";
+            } else if (unit === 'mcg/min') {
+                inputSteps.value = "1, 2.5, 5, 10, 15, 20, 25, 30, 40, 50";
+            } else if (unit === 'mg/jam') {
+                inputSteps.value = "0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 5, 6, 8, 10";
+            }
+        }
+
+        function generateTitrationTable() {
+            const select = document.getElementById('tabel_drug');
+            const option = select.options[select.selectedIndex];
+            const drugName = option && option.value ? option.getAttribute('data-name') : 'Obat Kustom';
+            
+            const weight = parseFloat(document.getElementById('tabel_weight').value);
+            const mg = parseFloat(document.getElementById('tabel_mg').value);
+            const cc = parseFloat(document.getElementById('tabel_cc').value);
+            const unit = document.getElementById('tabel_unit').value;
+            const stepsStr = document.getElementById('tabel_steps').value;
+
+            if(isNaN(mg) || isNaN(cc) || mg <= 0 || cc <= 0) {
+                toast('Sediaan (mg) dan Pelarut (cc) wajib diisi dengan benar.', 'error'); return;
+            }
+            if(unit === 'mcg/kg/min' && (isNaN(weight) || weight <= 0)) {
+                toast('Berat Badan wajib diisi untuk satuan mcg/kg/min.', 'error'); return;
+            }
+            if(!stepsStr.trim()) {
+                toast('Daftar Range Dosis tidak boleh kosong.', 'error'); return;
+            }
+
+            const total_mcg = mg * 1000;
+            const conc_mcg_per_cc = total_mcg / cc;
+            const conc_mg_per_cc = mg / cc;
+
+            document.getElementById('out_tabel_title').textContent = `Tabel Titrasi ${drugName}`;
+            document.getElementById('out_tabel_sediaan').textContent = `${mg} mg / ${cc} cc`;
+            document.getElementById('out_tabel_conc').textContent = `${conc_mcg_per_cc.toFixed(1)} mcg/cc`;
+            document.getElementById('out_tabel_bb').textContent = isNaN(weight) ? '-' : `${weight} kg`;
+            
+            let displayUnit = 'mcg/kgBB/menit';
+            if(unit === 'mcg/min') displayUnit = 'mcg/menit';
+            if(unit === 'mg/jam') displayUnit = 'mg/jam';
+            document.getElementById('out_tabel_unit').textContent = `(${displayUnit})`;
+
+            const stepsArray = stepsStr.split(',').map(s => parseFloat(s.trim())).filter(s => !isNaN(s)).sort((a,b)=>a-b);
+            
+            const tbody = document.getElementById('out_tabel_body');
+            let rowsHtml = '';
+
+            stepsArray.forEach(target => {
+                let speed_cc_jam = 0;
+                
+                if(unit === 'mcg/kg/min') {
+                    speed_cc_jam = (target * weight * 60) / conc_mcg_per_cc;
+                } else if (unit === 'mcg/min') {
+                    speed_cc_jam = (target * 60) / conc_mcg_per_cc;
+                } else if (unit === 'mg/jam') {
+                    speed_cc_jam = target / conc_mg_per_cc;
+                }
+
+                const speed_gtt_mnt = (speed_cc_jam * 20) / 60;
+
+                rowsHtml += `
+                    <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+                        <td class="p-3 border border-slate-200 dark:border-slate-700 text-center font-bold text-lg text-slate-800 dark:text-slate-200">${target}</td>
+                        <td class="p-3 border border-slate-200 dark:border-slate-700 text-center font-black text-emerald-600 dark:text-emerald-400">${speed_cc_jam.toFixed(2)}</td>
+                        <td class="p-3 border border-slate-200 dark:border-slate-700 text-center font-black text-amber-600 dark:text-amber-500">${speed_gtt_mnt.toFixed(1)}</td>
+                    </tr>
+                `;
+            });
+
+            tbody.innerHTML = rowsHtml;
+            
+            document.getElementById('tabel-placeholder').classList.add('hidden');
+            document.getElementById('print-area').classList.remove('hidden');
+            
+            toast('Tabel Titrasi berhasil dibuat!', 'success');
+        }
+
+        // --- SISTEM CAPTURE TABEL MENJADI GAMBAR & SHARE ---
+        function captureTableAndShare() {
+            toast('Memproses gambar tabel...', 'success');
+            
+            const drugName = document.getElementById('out_tabel_title').textContent.replace('Tabel Titrasi ', '');
+            const sediaan = document.getElementById('out_tabel_sediaan').textContent;
+            const conc = document.getElementById('out_tabel_conc').textContent;
+            const bb = document.getElementById('out_tabel_bb').textContent;
+            const targetUnit = document.getElementById('out_tabel_unit').textContent;
+
+            const tbody = document.getElementById('out_tabel_body');
+            const rows = tbody.querySelectorAll('tr');
+
+            if(rows.length === 0) {
+                toast('Tabel masih kosong!', 'error');
+                return;
+            }
+
+            const appName = localStorage.getItem('appName') || 'SI ONTEL';
+            const primaryColor = getComputedStyle(document.documentElement).getPropertyValue('--color-primary').trim() || '#0ea5e9';
+
+            // Kalkulasi Dimensi Kanvas/SVG Dinamis (Tergantung Jumlah Baris)
+            const rowHeight = 40;
+            const startY = 220; // Mulai posisi tabel Y
+            const svgHeight = startY + (rows.length * rowHeight) + 60; // ditambah padding footer
+            const svgWidth = 800;
+
+            let rowsSvg = '';
+            rows.forEach((tr, index) => {
+                const cells = tr.querySelectorAll('td');
+                const target = cells[0].textContent;
+                const syringe = cells[1].textContent;
+                const infus = cells[2].textContent;
+                const y = startY + (index * rowHeight);
+
+                const bgFill = index % 2 === 0 ? '#ffffff' : '#f8fafc'; // Selang-seling warna
+
+                rowsSvg += `
+                    <rect x="40" y="${y}" width="720" height="${rowHeight}" fill="${bgFill}" />
+                    <line x1="40" y1="${y}" x2="760" y2="${y}" stroke="#e2e8f0" stroke-width="1" />
+                    
+                    <text x="160" y="${y + 26}" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#334155" text-anchor="middle">${target}</text>
+                    <line x1="280" y1="${y}" x2="280" y2="${y + rowHeight}" stroke="#e2e8f0" stroke-width="1" />
+                    
+                    <text x="400" y="${y + 26}" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#059669" text-anchor="middle">${syringe}</text>
+                    <line x1="520" y1="${y}" x2="520" y2="${y + rowHeight}" stroke="#e2e8f0" stroke-width="1" />
+                    
+                    <text x="640" y="${y + 26}" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#d97706" text-anchor="middle">${infus}</text>
+                `;
+            });
+
+            // Menambahkan garis bawah tabel dan frame pinggir
+            rowsSvg += `
+                <line x1="40" y1="${startY + (rows.length * rowHeight)}" x2="760" y2="${startY + (rows.length * rowHeight)}" stroke="#cbd5e1" stroke-width="2" />
+                <line x1="40" y1="190" x2="40" y2="${startY + (rows.length * rowHeight)}" stroke="#cbd5e1" stroke-width="2" />
+                <line x1="760" y1="190" x2="760" y2="${startY + (rows.length * rowHeight)}" stroke="#cbd5e1" stroke-width="2" />
+            `;
+
+            const svgString = `
+            <svg xmlns="http://www.w3.org/2000/svg" width="${svgWidth}" height="${svgHeight}" viewBox="0 0 ${svgWidth} ${svgHeight}">
+                <rect width="100%" height="100%" fill="#ffffff" />
+                
+                <!-- Header Latar Belakang Biru -->
+                <rect width="100%" height="110" fill="${primaryColor}" />
+
+                <text x="40" y="45" fill="rgba(255,255,255,0.8)" font-family="Arial, sans-serif" font-size="14" font-weight="bold" letter-spacing="2">TABEL CONTEKAN TITRASI</text>
+                <text x="40" y="85" fill="#ffffff" font-family="Arial, sans-serif" font-size="34" font-weight="900">${drugName}</text>
+                <text x="760" y="45" fill="#ffffff" font-family="Arial, sans-serif" font-size="20" font-weight="bold" text-anchor="end">${appName}</text>
+                <text x="760" y="80" fill="rgba(255,255,255,0.8)" font-family="Arial, sans-serif" font-size="12" font-weight="normal" text-anchor="end">Dibuat: ${formatDateTime(new Date().toISOString()).date}</text>
+
+                <!-- Box Informasi -->
+                <rect x="40" y="130" width="720" height="40" rx="8" fill="#f1f5f9" />
+                <text x="60" y="155" font-family="Arial, sans-serif" font-size="14" fill="#475569">Sediaan: <tspan font-weight="bold" fill="#0ea5e9">${sediaan}</tspan></text>
+                <text x="320" y="155" font-family="Arial, sans-serif" font-size="14" fill="#475569">Konsentrasi: <tspan font-weight="bold" fill="#059669">${conc}</tspan></text>
+                <text x="580" y="155" font-family="Arial, sans-serif" font-size="14" fill="#475569">Berat Badan: <tspan font-weight="bold" fill="#d97706">${bb}</tspan></text>
+
+                <!-- Header Tabel -->
+                <rect x="40" y="190" width="720" height="30" fill="#e2e8f0" stroke="#cbd5e1" stroke-width="2"/>
+                <text x="160" y="210" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#1e293b" text-anchor="middle">TARGET DOSIS ${targetUnit}</text>
+                <text x="400" y="210" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#1e293b" text-anchor="middle">SYRINGE PUMP (cc/jam)</text>
+                <text x="640" y="210" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#1e293b" text-anchor="middle">INFUS PUMP (tetes/mnt)</text>
+
+                <!-- Baris Data Tabel -->
+                ${rowsSvg}
+
+                <!-- Footer Teks -->
+                <text x="${svgWidth/2}" y="${svgHeight - 20}" font-family="Arial, sans-serif" font-size="12" fill="#94a3b8" text-anchor="middle" font-style="italic">Diproduksi secara otomatis oleh kalkulator ${appName}</text>
+            </svg>`;
+
+            const blob = new Blob([svgString], {type: 'image/svg+xml;charset=utf-8'});
+            const url = URL.createObjectURL(blob);
+            const img = new Image();
+            
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                canvas.width = svgWidth;
+                canvas.height = svgHeight;
+                const ctx = canvas.getContext('2d');
+                
+                ctx.fillStyle = "#ffffff";
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                ctx.imageSmoothingEnabled = true;
+                ctx.imageSmoothingQuality = 'high';
+                ctx.drawImage(img, 0, 0);
+                URL.revokeObjectURL(url); 
+                
+                try {
+                    canvas.toBlob((pngBlob) => {
+                        const fileNameStr = `Tabel-${drugName.replace(/\s+/g, '-')}-${Date.now()}.png`;
+                        const file = new File([pngBlob], fileNameStr, { type: 'image/png' });
+                        
+                        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                            navigator.share({
+                                files: [file],
+                                title: `Tabel Titrasi ${drugName}`,
+                                text: `Tabel Contekan Dosis ${drugName} - Dibuat via ${appName}`
+                            }).then(() => toast('Berhasil dibagikan!', 'success'))
+                              .catch(() => fallbackDownload(pngBlob, fileNameStr));
+                        } else {
+                            fallbackDownload(pngBlob, fileNameStr);
+                        }
+                    }, 'image/png', 1.0);
+                } catch (err) {
+                    toast('Gagal memproses ekspor gambar tabel.', 'error');
+                }
+            };
+            img.onerror = () => toast('Gagal membuat SVG.', 'error');
+            img.src = url;
+        }
+
+        // --- 6. MASTER OBAT CRUD ---
+        function renderMasterObat() {
+            try {
+                if(!db) return;
+                const store = txDB('obat', 'readonly');
+                const searchEl = document.getElementById('search-obat');
+                const q = (searchEl ? searchEl.value : '').trim().toLowerCase();
+                
+                const req = store.getAll();
+                req.onsuccess = (e) => {
+                    let data = e.target.result || [];
+                    if(q) data = data.filter(d => (d.nama || '').toLowerCase().includes(q));
+                    
+                    const tbody = document.getElementById('table-obat-body');
+                    if(!tbody) return;
+
+                    if(data.length === 0) {
+                        tbody.innerHTML = `<tr><td colspan="4" class="p-8 text-center text-slate-400">Tidak ada data obat di database.</td></tr>`;
+                        return;
+                    }
+
+                    const isMore = data.length > 100;
+                    data = data.slice(0, 100);
+
+                    let html = data.map(d => `
+                        <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+                            <td class="p-4 font-bold" data-label="Nama Obat">${d.nama}</td>
+                            <td class="p-4 text-slate-500 font-semibold" data-label="Sediaan">${d.mg} mg</td>
+                            <td class="p-4 text-slate-500 font-semibold" data-label="Pelarut">${d.cc} cc</td>
+                            <td class="p-4 text-right flex flex-row-reverse md:flex-row justify-end gap-2" data-label="Aksi">
+                                <button onclick="editObat(${d.id})" class="p-2.5 rounded-xl bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400 btn-press"><i data-lucide="edit" class="w-4 h-4"></i></button>
+                                <button onclick="confirmDeleteObat(${d.id})" class="p-2.5 rounded-xl bg-red-50 text-red-600 dark:bg-red-900/20 dark:text-red-400 btn-press"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                            </td>
+                        </tr>
+                    `).join('');
+                    
+                    if (isMore) {
+                        html += `<tr><td colspan="4" class="p-4 text-center text-sm text-slate-400 italic">Menampilkan 100 data. Gunakan kolom pencarian untuk obat lainnya...</td></tr>`;
+                    }
+                    
+                    tbody.innerHTML = html;
+                    if(typeof lucide !== 'undefined') lucide.createIcons();
+                };
+            } catch (err) {
+                console.error("Gagal merender Master Obat:", err);
+            }
+        }
+
+        function openModalObat() {
+            document.getElementById('form-obat-id').value = '';
+            document.getElementById('form-obat-nama').value = '';
+            document.getElementById('form-obat-mg').value = '';
+            document.getElementById('form-obat-cc').value = '';
+            document.getElementById('modal-obat-title').textContent = 'Tambah Master Obat';
+            
+            const modal = document.getElementById('modal-obat');
+            modal.classList.remove('hidden');
+            setTimeout(() => modal.classList.remove('opacity-0'), 10);
+        }
+
+        function closeModalObat() {
+            const modal = document.getElementById('modal-obat');
+            modal.classList.add('opacity-0');
+            setTimeout(() => modal.classList.add('hidden'), 300);
+        }
+
+        function editObat(id) {
+            txDB('obat', 'readonly').get(id).onsuccess = (e) => {
+                const data = e.target.result;
+                document.getElementById('form-obat-id').value = data.id;
+                document.getElementById('form-obat-nama').value = data.nama;
+                document.getElementById('form-obat-mg').value = data.mg;
+                document.getElementById('form-obat-cc').value = data.cc;
+                document.getElementById('modal-obat-title').textContent = 'Edit Obat';
+                
+                const modal = document.getElementById('modal-obat');
+                modal.classList.remove('hidden');
+                setTimeout(() => modal.classList.remove('opacity-0'), 10);
+            };
+        }
+
+        function saveMasterObat() {
+            const id = document.getElementById('form-obat-id').value;
+            const data = {
+                nama: document.getElementById('form-obat-nama').value,
+                mg: parseFloat(document.getElementById('form-obat-mg').value),
+                cc: parseFloat(document.getElementById('form-obat-cc').value)
+            };
+
+            if(!data.nama || isNaN(data.mg) || isNaN(data.cc)) {
+                toast('Semua kolom wajib diisi dengan benar!', 'error'); return;
+            }
+
+            const store = txDB('obat', 'readwrite');
+            if(id) {
+                data.id = parseInt(id);
+                store.put(data).onsuccess = () => finishSaveObat();
+            } else {
+                store.add(data).onsuccess = () => finishSaveObat();
+            }
+        }
+        function finishSaveObat() {
+            closeModalObat();
+            renderMasterObat();
+            loadCalculatorSelect();
+            loadTabelSelect();
+            toast('Data obat berhasil disimpan', 'success');
+        }
+
+        function confirmDeleteObat(id) {
+            showConfirm('Hapus Obat', 'Data obat ini akan dihapus permanen dari sistem. Lanjutkan?', () => {
+                txDB('obat', 'readwrite').delete(id).onsuccess = () => {
+                    renderMasterObat();
+                    loadCalculatorSelect();
+                    loadTabelSelect();
+                    toast('Obat berhasil dihapus', 'success');
+                };
+            });
+        }
+
+        // --- 7. HISTORY / RIWAYAT ---
+        function renderHistory() {
+            try {
+                if(!db) return;
+                const store = txDB('history', 'readonly');
+                const q = document.getElementById('search-history').value.toLowerCase();
+                
+                store.getAll().onsuccess = (e) => {
+                    let data = e.target.result.reverse(); 
+                    if(q) {
+                        data = data.filter(d => (d.drugName || '').toLowerCase().includes(q));
+                    }
+                    
+                    const tbody = document.getElementById('table-history-body');
+                    if(data.length === 0) {
+                        tbody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-slate-400">Belum ada riwayat kalkulasi yang tersimpan.</td></tr>`;
+                        return;
+                    }
+
+                    const isMore = data.length > 100;
+                    data = data.slice(0, 100);
+
+                    let html = data.map(d => {
+                        const dtFormat = formatDateTime(d.date);
+                        const methodColor = d.method === 'syringe' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400';
+                        
+                        return `
+                        <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+                            <td class="p-4" data-label="Tanggal Simpan">
+                                <div class="font-bold text-slate-700 dark:text-slate-200">${dtFormat.date}</div>
+                                <div class="text-xs text-slate-500 mt-0.5">${dtFormat.time}</div>
+                            </td>
+                            <td class="p-4" data-label="Alat"><span class="px-2.5 py-1 rounded-full text-xs font-bold ${methodColor} uppercase tracking-wider">${d.method || '-'}</span></td>
+                            <td class="p-4" data-label="Obat & Sediaan">
+                                <div class="font-bold text-slate-700 dark:text-slate-200">${d.drugName || '-'}</div>
+                                <div class="text-xs text-slate-500 mt-0.5">BB: ${d.weight || 0} kg | Sed: ${d.mg || 0}mg/${d.cc || 0}cc</div>
+                            </td>
+                            <td class="p-4" data-label="Kecepatan Dosis">
+                                <div class="font-black text-primary">${d.speed || 0} <span class="text-xs font-normal">${d.speedUnit || ''}</span></div>
+                                <div class="text-xs text-slate-500 mt-0.5">Tgt: ${d.target || 0} ${d.targetUnit || ''}</div>
+                            </td>
+                            <td class="p-4 text-right flex flex-row-reverse md:flex-row justify-end gap-2" data-label="Aksi">
+                                <button onclick="loadHistory(${d.id})" class="p-2.5 rounded-xl bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400 btn-press" title="Muat Ulang Ke Kalkulator"><i data-lucide="refresh-cw" class="w-4 h-4"></i></button>
+                                <button onclick="deleteHistory(${d.id})" class="p-2.5 rounded-xl bg-red-50 text-red-600 dark:bg-red-900/20 dark:text-red-400 btn-press" title="Hapus"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                            </td>
+                        </tr>
+                    `}).join('');
+
+                    if (isMore) {
+                        html += `<tr><td colspan="5" class="p-4 text-center text-sm text-slate-400 italic">Menampilkan 100 data terbaru...</td></tr>`;
+                    }
+
+                    tbody.innerHTML = html;
+                    lucide.createIcons();
+                };
+            } catch(e) {
+                console.error("Error merender riwayat: ", e);
+            }
+        }
+
+        function loadHistory(id) {
+            txDB('history', 'readonly').get(id).onsuccess = (e) => {
+                const data = e.target.result;
+                if(!data) return;
+                
+                document.querySelector(`input[name="calc_method"][value="${data.method}"]`).checked = true;
+                
+                if(data.drugId) {
+                    const select = document.getElementById('calc_drug');
+                    let exists = Array.from(select.options).some(opt => opt.value === data.drugId);
+                    if(exists) select.value = data.drugId;
+                }
+                
+                document.getElementById('calc_weight').value = data.weight || '';
+                document.getElementById('calc_dose_mg').value = data.mg || '';
+                document.getElementById('calc_volume_cc').value = data.cc || '';
+                document.getElementById('calc_target_dose').value = data.target || '';
+                
+                if(data.targetUnit) document.getElementById('calc_target_unit').value = data.targetUnit;
+                
+                calculateDose();
+                saveFormState();
+                navigate('calculator');
+                toast('Data dimuat ke kalkulator', 'success');
+            };
+        }
+
+        function deleteHistory(id) {
+            showConfirm('Hapus Riwayat', 'Data riwayat ini akan dihapus permanen. Lanjutkan?', () => {
+                txDB('history', 'readwrite').delete(id).onsuccess = () => {
+                    renderHistory();
+                    loadDashboard(); 
+                    toast('Riwayat dihapus', 'success');
+                };
+            });
+        }
+
+        function clearHistory() {
+            showConfirm('Bersihkan Riwayat', 'Semua riwayat kalkulasi akan dihapus permanen!', () => {
+                txDB('history', 'readwrite').clear().onsuccess = () => {
+                    renderHistory();
+                    loadDashboard(); 
+                    toast('Seluruh riwayat dibersihkan', 'success');
+                };
+            });
+        }
+
+        function loadDashboard() {
+            const hStore = txDB('history', 'readonly');
+            hStore.getAll().onsuccess = (e) => {
+                const history = e.target.result || [];
+                document.getElementById('stat-total').textContent = history.length;
+                document.getElementById('stat-syringe').textContent = history.filter(h => h.method === 'syringe').length;
+                document.getElementById('stat-infus').textContent = history.filter(h => h.method === 'infus').length;
+
+                const recent = history.slice(-3).reverse();
+                const rList = document.getElementById('recent-history-list');
+                if(recent.length > 0) {
+                    rList.innerHTML = recent.map(r => {
+                        const dtFormat = formatDateTime(r.date);
+                        return `
+                        <div class="flex justify-between items-center p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-darkBorder">
+                            <div>
+                                <p class="font-bold text-sm">${r.drugName || '-'}</p>
+                                <p class="text-xs text-slate-500">${dtFormat.date} - ${(r.method || '').toUpperCase()}</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="font-black text-primary">${r.speed || 0} <span class="text-xs font-normal">${r.speedUnit || ''}</span></p>
+                            </div>
+                        </div>
+                        `;
+                    }).join('');
+                } else {
+                    rList.innerHTML = '<p class="text-sm text-slate-500 italic">Belum ada riwayat terakhir.</p>';
+                }
+
+                const drugCounts = {};
+                history.forEach(h => { 
+                    if(h.drugName) {
+                        drugCounts[h.drugName] = (drugCounts[h.drugName] || 0) + 1; 
+                    }
+                });
+
+                const sortedDrugs = Object.entries(drugCounts).sort((a, b) => b[1] - a[1]).slice(0, 10);
+                const top10DrugCounts = Object.fromEntries(sortedDrugs);
+                
+                txDB('obat', 'readonly').count().onsuccess = (ev) => {
+                    document.getElementById('stat-obat').textContent = ev.target.result;
+                    renderChart(top10DrugCounts);
+                };
+            };
+        }
+
+        function renderChart(dataObj) {
+            if(!dataObj && chartInstance) dataObj = chartInstance.dataObjCache;
+            if(!dataObj) return;
+
+            const ctx = document.getElementById('dashboardChart').getContext('2d');
+            const isDark = document.documentElement.classList.contains('dark');
+            const primaryColor = getComputedStyle(document.documentElement).getPropertyValue('--color-primary').trim();
+            
+            const labels = Object.keys(dataObj);
+            const values = Object.values(dataObj);
+
+            if(chartInstance) chartInstance.destroy();
+            
+            Chart.defaults.color = isDark ? '#94a3b8' : '#64748b';
+            Chart.defaults.font.family = 'Inter, sans-serif';
+
+            chartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels.length ? labels : ['Belum ada data'],
+                    datasets: [{
+                        label: 'Frekuensi Penggunaan',
+                        data: values.length ? values : [0],
+                        backgroundColor: primaryColor,
+                        borderRadius: 6,
+                        barThickness: 24
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { 
+                            beginAtZero: true, 
+                            ticks: { stepSize: 1 },
+                            grid: { color: isDark ? '#334155' : '#f1f5f9' }
+                        },
+                        x: { grid: { display: false } }
+                    }
+                }
+            });
+            chartInstance.dataObjCache = dataObj;
+        }
+
+        // --- 8. BACKUP/RESTORE ---
+        function exportToExcel() {
+            Promise.all([
+                new Promise(res => txDB('obat', 'readonly').getAll().onsuccess = e => res(e.target.result)),
+                new Promise(res => txDB('history', 'readonly').getAll().onsuccess = e => res(e.target.result))
+            ]).then(([obat, history]) => {
+                
+                const obatExcel = obat.map(d => ({
+                    "ID Obat": d.id,
+                    "Nama Obat": d.nama,
+                    "Sediaan Obat (mg)": d.mg,
+                    "Pelarut (cc)": d.cc
+                }));
+
+                const historyExcel = history.map(d => {
+                    const dateObj = new Date(d.date);
+                    const day = String(dateObj.getDate()).padStart(2, '0');
+                    const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+                    const year = dateObj.getFullYear();
+                    const hours = String(dateObj.getHours()).padStart(2, '0');
+                    const minutes = String(dateObj.getMinutes()).padStart(2, '0');
+                    const formattedDate = `${day}/${month}/${year} ${hours}:${minutes}`;
+
+                    return {
+                        "ID Riwayat": d.id,
+                        "Tanggal (DD/MM/YYYY)": formattedDate,
+                        "Alat Digunakan": d.method === 'infus' ? 'Infus Pump' : 'Syringe Pump',
+                        "Nama Obat": d.drugName,
+                        "Berat Badan (kg)": parseFloat(d.weight) || 0,
+                        "Dosis Obat (mg)": parseFloat(d.mg) || 0,
+                        "Volume Pelarut (cc)": parseFloat(d.cc) || 0,
+                        "Target Dosis": parseFloat(d.target) || 0,
+                        "Satuan Target": d.targetUnit,
+                        "Hasil Kecepatan": parseFloat(d.speed) || 0,
+                        "Satuan Kecepatan": d.speedUnit,
+                        "_Raw_Date_": d.date,       
+                        "_Raw_Drug_ID_": d.drugId 
+                    };
+                });
+
+                const wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(obatExcel), "Master Obat");
+                XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(historyExcel), "Riwayat Kalkulasi");
+                
+                const appName = localStorage.getItem('appName') || 'SI ONTEL';
+                const safeAppName = appName.replace(/[^a-zA-Z0-9\s]/g, '').trim().replace(/\s+/g, '_');
+                
+                const now = new Date();
+                const d = String(now.getDate()).padStart(2, '0');
+                const m = String(now.getMonth() + 1).padStart(2, '0');
+                const y = now.getFullYear();
+                
+                const filename = `Backup_${safeAppName}_${d}-${m}-${y}.xlsx`;
+                
+                XLSX.writeFile(wb, filename);
+                toast('Backup berhasil diunduh', 'success');
+            });
+        }
+
+        function importFromExcel(event) {
+            const file = event.target.files[0];
+            if(!file) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const data = new Uint8Array(e.target.result);
+                const wb = XLSX.read(data, {type: 'array'});
+                
+                showConfirm('Restore Data', 'Data saat ini akan ditimpa dengan data dari file backup. Lanjutkan?', async () => {
+                    try {
+                        let hasData = false;
+                        
+                        if(wb.Sheets["Master Obat"] || wb.Sheets["MasterObat"]) {
+                            const sheet = wb.Sheets["Master Obat"] || wb.Sheets["MasterObat"];
+                            const rawData = XLSX.utils.sheet_to_json(sheet);
+                            const storeO = txDB('obat', 'readwrite');
+                            storeO.clear();
+                            rawData.forEach(row => {
+                                storeO.add({
+                                    id: row["ID Obat"] || row.id,
+                                    nama: row["Nama Obat"] || row.nama || "Unknown",
+                                    mg: parseFloat(row["Sediaan Obat (mg)"] || row.mg) || 0,
+                                    cc: parseFloat(row["Pelarut (cc)"] || row.cc) || 0
+                                });
+                            });
+                            hasData = true;
+                        }
+                        
+                        if(wb.Sheets["Riwayat Kalkulasi"] || wb.Sheets["RiwayatKalkulasi"]) {
+                            const sheet = wb.Sheets["Riwayat Kalkulasi"] || wb.Sheets["RiwayatKalkulasi"];
+                            const rawData = XLSX.utils.sheet_to_json(sheet);
+                            const storeH = txDB('history', 'readwrite');
+                            storeH.clear();
+                            rawData.forEach(row => {
+                                storeH.add({
+                                    id: row["ID Riwayat"] || row.id,
+                                    date: row["_Raw_Date_"] || row.date || new Date().toISOString(),
+                                    method: (row["Alat Digunakan"] === 'Infus Pump' || row.method === 'infus') ? 'infus' : 'syringe',
+                                    drugId: row["_Raw_Drug_ID_"] || row.drugId || '',
+                                    drugName: row["Nama Obat"] || row.drugName || '-',
+                                    weight: parseFloat(row["Berat Badan (kg)"] || row.weight) || 0,
+                                    mg: parseFloat(row["Dosis Obat (mg)"] || row.mg) || 0,
+                                    cc: parseFloat(row["Volume Pelarut (cc)"] || row.cc) || 0,
+                                    target: parseFloat(row["Target Dosis"] || row.target) || 0,
+                                    targetUnit: row["Satuan Target"] || row.targetUnit || '',
+                                    speed: row["Hasil Kecepatan"] || row.speed || 0,
+                                    speedUnit: row["Satuan Kecepatan"] || row.speedUnit || ''
+                                });
+                            });
+                            hasData = true;
+                        }
+
+                        if(hasData) {
+                            toast('Restore data berhasil!', 'success');
+                            setTimeout(() => window.location.reload(), 1500);
+                        } else {
+                            toast('Format Excel tidak sesuai!', 'error');
+                        }
+                    } catch (err) {
+                        console.error(err);
+                        toast('Gagal membaca format file', 'error');
+                    }
+                });
+            };
+            reader.readAsArrayBuffer(file);
+            event.target.value = ''; 
+        }
+
+        function confirmResetDB() {
+            showConfirm('Reset Total', 'PERINGATAN! Semua data obat dan riwayat akan dihapus. Lanjutkan?', () => {
+                if (db) db.close();
+                
+                const req1 = indexedDB.deleteDatabase('SiOntelDB');
+                const req2 = indexedDB.deleteDatabase('OnDoseDB');
+                
+                let done = 0;
+                const checkDone = () => {
+                    done++;
+                    if (done === 2) {
+                        localStorage.clear();
+                        toast('Aplikasi direset. Memuat ulang...', 'success');
+                        setTimeout(() => window.location.reload(), 500);
+                    }
+                };
+
+                req1.onsuccess = checkDone; req1.onerror = checkDone; req1.onblocked = checkDone;
+                req2.onsuccess = checkDone; req2.onerror = checkDone; req2.onblocked = checkDone;
+                
+                setTimeout(() => {
+                    localStorage.clear();
+                    window.location.reload();
+                }, 2000);
+            });
+        }
+
+        // --- 9. UI COMPONENTS (Toast & Modal) ---
+        function toast(msg, type='success') {
+            const container = document.getElementById('toast-container');
+            const el = document.createElement('div');
+            const icon = type === 'success' ? '<i data-lucide="check-circle" class="w-5 h-5"></i>' : '<i data-lucide="x-circle" class="w-5 h-5"></i>';
+            const bg = type === 'success' ? 'bg-emerald-600 text-white shadow-emerald-600/30' : 'bg-red-600 text-white shadow-red-600/30';
+            
+            el.className = `animate-slide-in flex items-center gap-3 px-4 py-3 rounded-xl shadow-lg font-bold text-sm z-50 pointer-events-auto ${bg}`;
+            el.innerHTML = `${icon} ${msg}`;
+            container.appendChild(el);
+            lucide.createIcons();
+            
+            setTimeout(() => {
+                el.style.opacity = '0';
+                el.style.transform = 'translateY(-10px)';
+                el.style.transition = 'all 0.3s ease';
+                setTimeout(() => el.remove(), 300);
+            }, 3000);
+        }
+
+        function showConfirm(title, desc, actionFn) {
+            document.getElementById('confirm-title').textContent = title;
+            document.getElementById('confirm-desc').textContent = desc;
+            currentConfirmAction = actionFn;
+            
+            const modal = document.getElementById('confirm-modal');
+            modal.classList.remove('hidden');
+            setTimeout(() => modal.classList.remove('opacity-0'), 10);
+            
+            document.getElementById('confirm-btn-action').onclick = () => {
+                if(currentConfirmAction) currentConfirmAction();
+                closeConfirmModal();
+            };
+        }
+
+        function closeConfirmModal() {
+            const modal = document.getElementById('confirm-modal');
+            modal.classList.add('opacity-0');
+            setTimeout(() => modal.classList.add('hidden'), 300);
+            currentConfirmAction = null;
+        }
+    </script>
+</body>
+</html>
